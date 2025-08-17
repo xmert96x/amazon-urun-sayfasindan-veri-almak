@@ -54,8 +54,13 @@ if (elem) {
 
 
   let imageUrl = null;
-  const imgEl = document.querySelector('#landingImage') || document.querySelector('#imgTagWrapperId img');
-  if (imgEl) imageUrl = imgEl.getAttribute('data-old-hires') || imgEl.src;
+const imgEl = document.querySelector('#landingImage') || document.querySelector('#imgTagWrapperId img');
+if (imgEl) {
+  imageUrl =
+    imgEl.getAttribute('data-old-hires') ||
+    imgEl.getAttribute('srcset')?.split(',').pop().split(' ')[0] || // en yüksek çözünürlüklü olanı al
+    imgEl.src;
+}
 const stockInfo = 
     document.querySelector(
         '#availabilityInsideBuyBox_feature_div #availability span.a-size-medium.a-color-success,' +
