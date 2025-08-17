@@ -1,0 +1,63 @@
+{
+  "manifest_version": 3,
+  "name": "Amazon → Telegram",
+  "version": "1.0",
+    "description": "Açık olan Amazon ürün sayfasını Telegram'a göndermeyi sağlar. İletişim: @xmert96x",
+  "icons": {
+    "16": "amazon.png",
+      "32": "amazon.png",
+      "48": "amazon.png",
+      "128": "amazon.png"
+  },
+"permissions": ["storage", "tabs", "scripting", "activeTab", "commands"],
+  "host_permissions": [
+    "https://*.amazon.com/*",
+    "https://*.amazon.com.tr/*",
+    "https://*.amazon.co.uk/*",
+    "https://*.amazon.de/*",
+    "https://*.amazon.fr/*",
+    "https://*.amazon.it/*",
+    "https://*.amazon.es/*",
+    "https://*.amazon.ca/*",
+    "https://*.amazon.in/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": { 
+  
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "amazon.png",
+      "32": "amazon.png",
+      "48": "amazon.png",
+      "128": "amazon.png"
+    } 
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.amazon.com/*",
+        "https://*.amazon.com.tr/*",
+        "https://*.amazon.co.uk/*",
+        "https://*.amazon.de/*",
+        "https://*.amazon.fr/*",
+        "https://*.amazon.it/*",
+        "https://*.amazon.es/*",
+        "https://*.amazon.ca/*",
+        "https://*.amazon.in/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "send_to_telegram": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S"
+      } 
+        ,"description": "Acik Olan Amazon Urun Sayfani Telegram Gondermeyi  Sağlayan Kısayol"
+
+    }
+  }
+}

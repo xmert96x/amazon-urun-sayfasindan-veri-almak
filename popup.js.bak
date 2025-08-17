@@ -1,0 +1,86 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const sendBtn = document.getElementById('sendBtn');
+    const statusMessage = document.getElementById('statusMessage');
+    const soundToggle = document.getElementById("soundToggle"); // checkbox
+
+    // Ayarlar butonuna tıklayınca settings sayfasına yönlendir
+    document.getElementById('settingsBtn').addEventListener('click', () => {
+        window.location.href = 'settings.html';
+    });
+
+    // BOT_TOKEN ve CHANNEL_CHAT_ID ayarlarını kontrol et, yoksa ayarlar sayfasına yönlendir
+    chrome.storage.local.get(["BOT_TOKEN", "CHANNEL_CHAT_ID"], (data) => {
+        if (data.CHANNEL_CHAT_ID === undefined || data.BOT_TOKEN === undefined) {
+            window.location.href = 'settings.html';
+        }
+    });
+
+    // Ses ayarının durumunu depolamadan al ve toggle'ı ayarla
+    chrome.storage.local.get("soundEnabled", (data) => {
+        if (data.soundEnabled !== undefined) {
+            soundToggle.checked = data.soundEnabled;
+        } else {
+            soundToggle.checked = true; // Varsayılan olarak açık yap
+            chrome.storage.local.set({ soundEnabled: true });
+        }
+    });
+
+    // Ses ayarı toggle'ında bir değişiklik olduğunda yeni durumu kaydet
+    soundToggle.addEventListener('change', () => {
+        const isEnabled = soundToggle.checked;
+        chrome.storage.local.set({ soundEnabled: isEnabled });
+    });
+
+    // "Gönder" butonuna tıklandığında çalışacak ana fonksiyon
+    sendBtn.addEventListener('click', async() => {
+        statusMessage.textContent = '';
+        sendBtn.disabled = true; // Butonu devre dışı bırak, tekrar tıklanmasını önle
+
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+        // Aktif sayfanın Amazon'a ait olup olmadığını kontrol et
+        if (!tab || !tab.url.includes('amazon.')) {
+            statusMessage.textContent = 'Hata: Lütfen bir Amazon ürün sayfasında olun.';
+            sendBtn.disabled = false;
+            return;
+        }
+
+        statusMessage.textContent = 'Ürün bilgileri alınıyor...';
+
+        try {
+            // İçerik script'ini aktif sekmeye enjekte et
+            await chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                files: ['content.js']
+            });
+
+            // Ürün bilgilerini çekmek için içerik script'ine mesaj gönder
+            const response = await chrome.tabs.sendMessage(tab.id, { action: 'extractProduct' });
+
+            // Eğer bilgi alınamadıysa hata fırlat
+            if (!response || !response.success) {
+                // Hatalı boşluk kaldırıldı
+                throw new Error(response?.error || 'Ürün bilgisi alınamadı.');
+            }
+
+            statusMessage.textContent = 'Bilgiler alındı, Telegram\'a gönderiliyor...';
+
+            // Çekilen ürün bilgilerini Telegram'a göndermek için arka plan script'ine mesaj gönder
+            const res = await chrome.runtime.sendMessage({ action: 'sendTelegram', payload: response.data });
+
+            // Telegram'dan gelen yanıtı kontrol et
+            if (res && res.ok) {
+                statusMessage.textContent = '✔ Telegram’a başarıyla gönderildi!';
+            } else {
+                // Hatalı boşluk kaldırıldı
+                throw new Error(res?.error || 'Telegram\'a gönderilirken hata oluştu.');
+            }
+        } catch (err) {
+            // Hata durumunda ekrana hata mesajını yazdır
+            statusMessage.textContent = 'Hata: ' + err.message;
+        } finally {
+            // İşlem tamamlandığında butonu tekrar etkinleştir
+            sendBtn.disabled = false;
+        }
+    });
+});

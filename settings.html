@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eklenti Ayar Arayüzü</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Genel Body ve Kapsayıcı */
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f5f6fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      box-sizing: border-box;
+      color: #2f3640;
+      width: 100vw; /* Sayfanın tam genişliği kaplamasını sağlar */
+    }
+
+    h2 {
+      margin-top: 40px;
+      color: #2f3640;
+    }
+
+    form {
+      background-color: #fff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 90%;
+      max-width: 400px;
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: 600;
+      color: #2f3640;
+    }
+
+    .input-container {
+      position: relative;
+      width: 100%;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 40px 12px 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      outline: none;
+      transition: border 0.3s;
+      box-sizing: border-box;
+    }
+ input[type="text"]{padding-right: 12px;}
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #00a8ff;
+    }
+
+    .toggle-visibility {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      user-select: none;
+      font-size: 18px;
+      color: #888;
+    }
+    
+ .toggle-visibility {cursor: pointer;}
+    button#submitBtn {
+      background-color: #4cd137;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: all 0.3s ease; /* animasyon efekti */
+    }
+ button#submitBtn:hover{
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25), 
+              0 6px 20px rgba(0,0,0,0.15); /* daha derin gölge */
+  transform: translateY(-2px); /* hafif yukarı kalkma efekti */
+  
+ }
+   #backButton {
+  position: fixed;
+  top: 10px;
+  left: 15px;
+  font-size: 16px;
+  user-select: none;
+  background-color: #f0f0f0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: all 0.3s ease; /* animasyon efekti */
+}
+
+#backButton:hover {
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25), 
+              0 6px 20px rgba(0,0,0,0.15); /* daha derin gölge */
+  transform: translateY(-2px); /* hafif yukarı kalkma efekti */
+} #notification { text-align: center;
+    display: none;
+ 
+    background-color: #4CAF50; /* yeşil başarılı renk */
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    font-family: Arial, sans-serif;
+    z-index: 1000;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  </style>
+</head>
+<body>
+  <h2>Eklenti Ayar Arayüzü</h2>
+
+  <form>
+    <label for="botToken">BOT_TOKEN:</label>
+    <div class="input-container">
+      <input
+        required
+        type="password"
+        id="botToken"
+        placeholder="Bot tokeninizi girin"
+      />
+      <span class="toggle-visibility" id="toggleBotToken">👁️</span>
+    </div>
+
+    <label for="channelId">CHANNEL_CHAT_ID:</label>
+    <div class="input-container">
+      <input
+        required
+        type="password"
+        id="channelId"
+        placeholder="Kanal ID’sini girin"
+      />
+      <span class="toggle-visibility" id="toggleChannelId">👁️</span>
+    </div>
+
+    <label for="refTag">Affiliate Etiketiniz:</label>
+    <div class="input-container">
+      <input
+        required
+        type="text"
+        id="refTag"
+        placeholder="Affiliate etiketinizi girin"
+      />
+    </div>
+
+    <button id="submitBtn">💾 Kaydet</button>
+ <div id="notification">Başarı ile kaydedildi!</div></form>
+
+  <div id="backButton">Geri</div>
+    <script src="settings.js" defer></script>
+  </body>
+</html>

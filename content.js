@@ -1,0 +1,110 @@
+function escapeMarkdownV2(text) {
+  if (!text) return '';
+  return text.replace(/([\_\[\]\(\)~\`\>\#\+\-\=\|\{\}\.\!\,\<\>])/g, '\\$1');
+}
+
+function extractASIN(url) {
+  const match = url.match(/\/dp\/([A-Z0-9]{10})|\/gp\/product\/([A-Z0-9]{10})/);
+  return match ? (match[1] || match[2]) : null;
+}
+
+function extractProduct() {
+  const titleEl = document.querySelector('#productTitle');
+  const title = titleEl ? titleEl.innerText.trim() : null;
+
+  let price = null;
+  const priceEl = document.querySelector('#corePriceDisplay_desktop_feature_div .aok-offscreen') ||
+                  document.querySelector('span.a-price span.a-offscreen') ||
+                  document.querySelector('#usedBuySection .offer-price') ||
+                  document.querySelector('.a-offscreen');
+  if (priceEl) price = priceEl.innerText.trim();
+
+function getProductSize() {
+  // 1. Genişleyen twister düzenini kontrol et
+  const expanderLabel = document.querySelector('#inline-twister-expander-header-size_name .a-color-secondary');
+  const expanderValue = document.querySelector('#inline-twister-expanded-dimension-text-size_name');
+  if (expanderLabel && expanderValue) {
+    return `*${expanderLabel.textContent.trim()}* ${expanderValue.textContent.trim()}`;
+  }
+
+  // 2. Tek satırlık twister düzenini kontrol et
+  const singletonLabel = document.querySelector('#inline-twister-singleton-header-size_name .inline-twister-dim-title');
+  const singletonValue = document.querySelector('#inline-twister-expanded-dimension-text-size_name');
+  if (singletonLabel && singletonValue) {
+    return `*${singletonLabel.textContent.trim()}* ${singletonValue.textContent.trim()}`;
+  }
+
+  // 3. Dropdown (varyasyon seçimi) düzenini kontrol et
+  const dropdownLabel = document.querySelector('#variation_size_name .a-form-label')?.textContent.trim();
+  const selectElem = document.getElementById('native_dropdown_selected_size_name');
+  const selectedSizeTemp = selectElem?.options[selectElem.selectedIndex]?.textContent.trim();
+  if (dropdownLabel && selectedSizeTemp) {
+    return `*${dropdownLabel}* ${selectedSizeTemp}`;
+  }
+
+  // Hiçbir boyutu bulamazsa boş dize döndür
+  return '';
+} const selectedSize = getProductSize();
+let internationalShippingContainer = '';
+
+const elem = document.querySelector('.a-section.a-spacing-mini');
+if (elem) {
+    internationalShippingContainer = elem.childNodes[0].textContent.trim();
+}
+
+
+  let imageUrl = null;
+  const imgEl = document.querySelector('#landingImage') || document.querySelector('#imgTagWrapperId img');
+  if (imgEl) imageUrl = imgEl.getAttribute('data-old-hires') || imgEl.src;
+const stockInfo = 
+    document.querySelector(
+        '#availabilityInsideBuyBox_feature_div #availability span.a-size-medium.a-color-success,' +
+        '#availabilityInsideBuyBox_feature_div #availability span.a-size-base.a-color-price.a-text-bold,' +
+        '#outOfStock .a-color-price.a-text-bold'
+    )?.textContent.trim() || '';
+
+     
+   
+
+  let offerData = {};
+document.querySelectorAll('.offer-display-feature-label').forEach(labelEl => {
+  const baslik = labelEl.innerText.trim();
+  const valueEl = labelEl.parentElement.querySelector('.offer-display-feature-text-message');
+  if (valueEl) {
+    offerData[baslik] = valueEl.innerText.trim();
+  }
+});
+
+  const promos = [];
+  const promoContainers = document.querySelectorAll(
+    '.promoPriceBlockMessage span[data-csa-c-type="item"], ' +
+    '#promotions_feature_div .a-list-item, ' +
+    '#HLCX_offer-listing .a-list-item, ' +
+    '.a-list-item.a-spacing-none.a-color-secondary'
+  );
+
+  promoContainers.forEach(container => {
+    const descriptionEl = container.querySelector('div.a-alert-content, span[id^="promoMessage"], span[id^="promoMessageCXCW"]');
+    let descriptionText = descriptionEl ? descriptionEl.innerText.trim() : container.innerText.trim();
+    descriptionText = descriptionText.replace(/Uygulandı|Kampanya ürünlerini gör|Koşullar/g,'').replace(/\n/g,' ').trim();
+    if(descriptionText && !promos.some(p=>p.description===descriptionText)){
+      const labelEl = container.querySelector('label[id^="greenBadge"], span.a-text-bold');
+      const labelText = labelEl ? labelEl.innerText.trim() : '';
+      promos.push({ label: labelText, description: descriptionText });
+    }
+  });
+
+  return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer };
+}
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if(msg.action==='extractProduct'){
+    try{
+      const data = extractProduct();
+      sendResponse({ success: true, data });
+    } catch(err){
+      sendResponse({ success: false, error: String(err) });
+    }
+    return true;
+  }
+});

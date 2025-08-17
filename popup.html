@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon → Telegram</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Genel Body ve Kapsayıcı */
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f5f6fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+      color: #2f3640;
+      /* Açılır pencere boyutunu belirlemek için güncellendi */
+      min-width: 320px;
+      max-width: 500px;
+    }
+
+    h3 {
+      font-size: 28px;
+      color: #2f3640;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .card {
+      background-color: #fff;
+      padding: 25px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      width: 95%; /* Açılır pencerenin %95'ini kaplar */
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    /* Toggle Stilleri */
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 15px;
+      border-radius: 10px;
+      background-color: #f5f6fa;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .toggle-container input[type="checkbox"] {
+      appearance: none;
+      width: 40px;
+      height: 20px;
+      background-color: #ccc;
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .toggle-container input[type="checkbox"]:checked {
+      background-color: #4cd137;
+    }
+
+    .toggle-container input[type="checkbox"]::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      background-color: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+
+    .toggle-container input[type="checkbox"]:checked::after {
+      transform: translateX(20px);
+    }
+
+    /* Buton Stilleri */
+    button {
+      padding: 14px;
+      font-size: 17px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #sendBtn {
+      background-color: #4cd137;
+      color: white;
+    }
+
+    #sendBtn:hover {
+      background-color: #44bd32;
+      transform: translateY(-2px);
+    }
+
+    #settingsBtn {
+      background-color: #00a8ff;
+      color: white;
+    }
+
+    #settingsBtn:hover {
+      background-color: #0097e6;
+      transform: translateY(-2px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    /* Durum Mesajı Stilleri */
+    #statusMessage {
+      font-size: 16px;
+      padding: 14px 20px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      text-align: center;
+      transition: all 0.3s ease;
+      display: none;
+    }
+
+    #statusMessage.success {
+      display: block;
+      color: #155724;
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+
+    #statusMessage.error {
+      display: block;
+      color: #721c24;
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+
+    #statusMessage.warning {
+      display: block;
+      color: #856404;
+      background-color: #fff3cd;
+      border-color: #ffeeba;
+    }
+  </style>
+</head>
+<body>
+  <h3>Amazon → Telegram</h3>
+
+  <div class="card">
+    <div class="toggle-container">
+      <label for="soundToggle">🔊 Sesli Gönder</label>
+      <input type="checkbox" id="soundToggle" checked />
+    </div>
+
+    <div id="statusMessage"></div>
+
+    <button id="sendBtn">
+      📤 Aktif Sayfayı Gönder
+    </button>
+    <button id="settingsBtn">
+      ⚙️ Ayarlar
+    </button>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
