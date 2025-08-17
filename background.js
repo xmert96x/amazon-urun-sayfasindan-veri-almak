@@ -63,7 +63,21 @@ async function sendToTelegram(payload) {
     const asin = extractASIN(payload.url);
     if (!asin) throw new Error('ASIN bulunamad');
  
-const affiliateUrl = `https://www.amazon.com.tr/dp/${asin}?${AFFILIATE_TAG}`;
+let affiliateUrl = `https://www.amazon.com.tr/dp/${asin}?${AFFILIATE_TAG}`;
+
+if (payload.conditionText && payload.conditionText.startsWith('İkinci El:')) {
+   affiliateUrl+="&smid=A215JX4S9CANSO&th=1";  
+}
+
+   if (payload.offerData && Object.keys(payload.offerData).length >= 2) {
+const firstTwoEntries = Object.entries(payload.offerData).slice(0, 2);
+
+const firstTwoValues = firstTwoEntries.map(([key, value]) => value);
+
+if ((firstTwoValues[0].includes('Amazon.com.tr') && firstTwoValues[1].includes('Amazon.com.tr'))) {
+ affiliateUrl+="&smid=A1UNQM1SR2CHM&th=1";
+}}
+
     const affiliateUrlSafe = escapeMarkdownV2(affiliateUrl);
 
     const res = await fetch(payload.imageUrl);
@@ -115,7 +129,7 @@ if (!(firstTwoValues[0].includes('Amazon.com.tr') && firstTwoValues[1].includes(
 if (escapedEntries.some(([key]) => key)) {
     // Eğer anahtar NULL değilse başına kalın yazı ekle
     offerText = escapedEntries
-        .map(([key, value]) => key ? `*${key}:* ${value}` : `  ${value}`)
+        .map(([key, value]) => key ? `*${key}:* ${value}` : ` ${value}`)
         .join('\n');
 } else {
     // Eğer tüm anahtarlar boşsa sadece değerleri alt alta yaz
@@ -132,6 +146,7 @@ if (escapedEntries.some(([key]) => key)) {
 
 if (payload.conditionText.startsWith('İkinci El:')) {
     captionParts.push(`*${escapeMarkdownV2(payload.conditionText.split(':')[0])}:* ${escapeMarkdownV2(payload.conditionText.split(':').slice(1).join(':').trim())}`);
+
 }
 
 captionParts.push(`\\#işbirliği \\#amazon \\#${asin}`);
