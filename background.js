@@ -129,7 +129,7 @@ console.log(captionParts);
     formData.append('chat_id', CHANNEL_CHAT_ID);
     formData.append('caption', captionParts.filter(Boolean).join('\n\n'));
     formData.append('parse_mode', 'MarkdownV2');
-    formData.append('photo', new File([blob], 'product.jpg', { type: blob.type }));
+    formData.append('photo', payload.imageUrl);
     console.log("newState "+newState);
     formData.append('disable_notification', !newState);
 
