@@ -124,13 +124,11 @@ if (!(firstTwoValues[0].includes('Amazon.com.tr') && firstTwoValues[1].includes(
         
 }}
 captionParts.push(`\\#işbirliği \\#amazon \\#${asin}`);
-console.log(captionParts);
     const formData = new FormData();
     formData.append('chat_id', CHANNEL_CHAT_ID);
     formData.append('caption', captionParts.filter(Boolean).join('\n\n'));
     formData.append('parse_mode', 'MarkdownV2');
     formData.append('photo', payload.imageUrl);
-    console.log("newState "+newState);
     formData.append('disable_notification', !newState);
 
     const telegramRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
