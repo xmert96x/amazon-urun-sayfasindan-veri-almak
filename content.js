@@ -18,6 +18,7 @@ function extractProduct() {
                   document.querySelector('#usedBuySection .offer-price') ||
                   document.querySelector('.a-offscreen');
   if (priceEl) price = priceEl.innerText.trim();
+ 
 
 function getProductSize() {
   // 1. Genişleyen twister düzenini kontrol et
@@ -71,14 +72,41 @@ const stockInfo =
      
    
 
-  let offerData = {};
-document.querySelectorAll('.offer-display-feature-label').forEach(labelEl => {
-  const baslik = labelEl.innerText.trim();
-  const valueEl = labelEl.parentElement.querySelector('.offer-display-feature-text-message');
-  if (valueEl) {
-    offerData[baslik] = valueEl.innerText.trim();
-  }
-});
+let offerData = {};
+
+// Birinci senaryoyu dener
+const firstAttemptLabels = document.querySelectorAll('.offer-display-feature-label');
+
+if (firstAttemptLabels.length > 0) {
+    // Eğer birinci senaryo çalışırsa, ilgili veriyi çeker
+    firstAttemptLabels.forEach(labelEl => {
+        const baslik = labelEl.innerText.trim();
+        const valueEl = labelEl.parentElement.querySelector('.offer-display-feature-text-message');
+        if (valueEl) {
+            offerData[baslik] = valueEl.innerText.trim();
+        }
+    });
+} else {
+    // Birinci senaryo başarısız olursa, ikinci senaryoyu dener
+    const sellerElement = document.querySelector('#sellerProfileTriggerId');
+    const fulfillmentElement = document.querySelector('#SSOFpopoverLink_ubb');
+
+    // "Satıcı" yazısını veriden çeker
+    if (sellerElement) {
+        // Ebeveyn elementin tüm metnini alır ("Satıcı Amazon Depo")
+        const parentText = sellerElement.parentElement.textContent.trim();
+        // Boşluklara göre ayırıp ilk kelimeyi alır ("Satıcı")
+        const sellerLabel = parentText.split(/\s+/)[0]; 
+        
+        offerData[sellerLabel] = sellerElement.textContent.trim();
+    }
+    
+    // "Amazon Lojistik" yazısını çeker
+    if (fulfillmentElement) {
+        offerData[""] = fulfillmentElement.textContent;
+    }
+}
+ 
 
   const promos = [];
   const promoContainers = document.querySelectorAll(
@@ -87,6 +115,10 @@ document.querySelectorAll('.offer-display-feature-label').forEach(labelEl => {
     '#HLCX_offer-listing .a-list-item, ' +
     '.a-list-item.a-spacing-none.a-color-secondary'
   );
+const conditionElement = document.querySelector('.a-section .a-row strong');
+const conditionText = conditionElement ? conditionElement.innerText.trim() : '';
+console.log(conditionText);
+
 
   promoContainers.forEach(container => {
     const descriptionEl = container.querySelector('div.a-alert-content, span[id^="promoMessage"], span[id^="promoMessageCXCW"]');
@@ -98,8 +130,12 @@ document.querySelectorAll('.offer-display-feature-label').forEach(labelEl => {
       promos.push({ label: labelText, description: descriptionText });
     }
   });
+ 
 
-  return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer };
+   
+
+ 
+  return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer,conditionText };
 }
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {

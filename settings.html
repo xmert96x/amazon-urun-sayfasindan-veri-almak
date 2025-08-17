@@ -116,19 +116,20 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.25), 
               0 6px 20px rgba(0,0,0,0.15); /* daha derin gölge */
   transform: translateY(-2px); /* hafif yukarı kalkma efekti */
-} #notification { text-align: center;
-    display: none;
- 
-    background-color: #4CAF50; /* yeşil başarılı renk */
-    color: white;
-    padding: 15px 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    font-family: Arial, sans-serif;
-    z-index: 1000;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    opacity: 0;
-    transform: translateY(-20px);
+} #notification {  text-align: center;
+  background-color: #d4edda; /* A light green color for success */
+  color: #155724; /* A dark green for text */
+  padding: 15px 25px;
+  border-radius: 8px;
+  border: 1px solid #c3e6cb;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  z-index: 1000;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  opacity: 0;
+  display: none ;
+  transform: translateY(-20px);
   }
   </style>
 </head>
@@ -169,7 +170,7 @@
     </div>
 
     <button id="submitBtn">💾 Kaydet</button>
- <div id="notification">Başarı ile kaydedildi!</div></form>
+ <div id="notification"></div></form>
 
   <div id="backButton">Geri</div>
     <script src="settings.js" defer></script>

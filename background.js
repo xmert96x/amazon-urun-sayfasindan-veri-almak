@@ -61,7 +61,7 @@ async function sendToTelegram(payload) {
 
    
     const asin = extractASIN(payload.url);
-    if (!asin) throw new Error('ASIN bulunamadı');
+    if (!asin) throw new Error('ASIN bulunamad');
  
 const affiliateUrl = `https://www.amazon.com.tr/dp/${asin}?${AFFILIATE_TAG}`;
     const affiliateUrlSafe = escapeMarkdownV2(affiliateUrl);
@@ -112,17 +112,28 @@ if (!(firstTwoValues[0].includes('Amazon.com.tr') && firstTwoValues[1].includes(
     // First, escape any potential markdown in the raw values
     const escapedEntries = firstTwoEntries.map(([key, value]) => [key, escapeMarkdownV2(value)]);
 
-    // Now, apply the bold formatting to the escaped values
-    const offerText = escapedEntries
-        .map(([key, value]) => `*${key}:* ${value}`)
+if (escapedEntries.some(([key]) => key)) {
+    // Eğer anahtar NULL değilse başına kalın yazı ekle
+    offerText = escapedEntries
+        .map(([key, value]) => key ? `*${key}:* ${value}` : `  ${value}`)
         .join('\n');
-
+} else {
+    // Eğer tüm anahtarlar boşsa sadece değerleri alt alta yaz
+    offerText = escapedEntries
+        .map(([_, value]) => `${value}`)
+        .join('\n').trim();
+}
     captionParts.push(offerText);
 }
     if (payload.internationalShippingContainer) {
         captionParts.push(escapeMarkdownV2(payload.internationalShippingContainer));
         
 }}
+
+if (payload.conditionText.startsWith('İkinci El:')) {
+    captionParts.push(`*${escapeMarkdownV2(payload.conditionText.split(':')[0])}:* ${escapeMarkdownV2(payload.conditionText.split(':').slice(1).join(':').trim())}`);
+}
+
 captionParts.push(`\\#işbirliği \\#amazon \\#${asin}`);
     const formData = new FormData();
     formData.append('chat_id', CHANNEL_CHAT_ID);

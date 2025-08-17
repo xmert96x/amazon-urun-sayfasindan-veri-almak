@@ -3,7 +3,6 @@ function toggleVisibility(id) {
   if (input) {  
     input.type = input.type === "password" ? "text" : "password"; 
     input.style.padding = "12px 40px 12px 12px";
-
   }
 }
 
@@ -80,6 +79,7 @@ if (
   setTimeout(() => {
     notif.style.opacity = 1;
     notif.style.transform = 'translateY(0)';
+    notif.innerHTML="Başarı ile kaydedildi!"
   }, 10);
 
   // 3 saniye sonra kaybolacak
