@@ -119,7 +119,17 @@ async function renderTable(type) {
         tbody.appendChild(row);
     });
 }
+async function checkAndRedirect() {
+    const botTokensData = await getData('botTokens');
+    const chatIdsData = await getData('chatIds');
+    const affiliateTagsData = await getData('affiliateTags');
 
+    if (Object.keys(botTokensData).length > 0 &&
+        Object.keys(chatIdsData).length > 0 &&
+        Object.keys(affiliateTagsData).length > 0) {
+        window.location.href = 'popup.html';
+    }
+}
 // Ekleme fonksiyonu
 function setupForm(type) {
     const form = document.getElementById(`form-${type}`);
@@ -140,8 +150,12 @@ function setupForm(type) {
         else updateUI(type);
 
         form.reset();
+
+        // Buraya ekledik: her veri eklendiğinde kontrol ve yönlendirme
+        await checkAndRedirect();
     });
 }
+
 
 // UI Güncelle
 async function updateUI(type) {
