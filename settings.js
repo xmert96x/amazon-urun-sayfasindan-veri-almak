@@ -5,75 +5,58 @@ let aktif_tag = null;
 
 // Sekme yönetimi
 function openTab(tabName) {
-   chrome.storage.local.set({ activeTabName: tabName });
+    chrome.storage.local.set({ activeTabName: tabName });
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
     document.getElementById(tabName).classList.add('active');
     document.querySelector(`.tab-button[data-tab="${tabName}"]`).classList.add('active');
 }
-    async function updateActiveData() {
+
+// Aktif verileri güncelle
+async function updateActiveData() {
     chrome.storage.local.get([
         'botTokens', 'chatIds', 'affiliateTags',
         'active-botTokens-key', 'active-chatIds-key', 'active-affiliateTags-key',
         'activeTabName'
     ], (res) => {
-        tempres = res;
         aktif_token = res['active-botTokens-key'] ? res.botTokens[res['active-botTokens-key']] : null;
         kanal_id = res['active-chatIds-key'] ? res.chatIds[res['active-chatIds-key']] : null;
         aktif_tag = res['active-affiliateTags-key'] ? res.affiliateTags[res['active-affiliateTags-key']] : null;
 
-        // Öncelik sırası: token -> kanal -> tag
-        if (!aktif_token) {
-            openTab('botTokens');
-        } else if (!kanal_id) {
-            openTab('chatIds');
-        } else if (!aktif_tag) {
-            openTab('affiliateTags');
-        } else if (res.activeTabName) {
-            // Hepsi varsa, son açık olan tabı aç
-            openTab(res.activeTabName);
-        } else {
-            // Hiç biri yoksa varsayılan
-            openTab('botTokens');
-        }
+        if (!aktif_token) openTab('botTokens');
+        else if (!kanal_id) openTab('chatIds');
+        else if (!aktif_tag) openTab('affiliateTags');
+        else if (res.activeTabName) openTab(res.activeTabName);
+        else openTab('botTokens');
     });
 }
 
- 
 updateActiveData();
-
-// Storage değiştiğinde otomatik güncelle
 chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === 'local') updateActiveData();
 });
 
-// Veri çekme
+// Veri çekme / kaydetme
 function getData(type) {
     return new Promise(resolve => {
-        chrome.storage.local.get([type], (result) => {
-            resolve(result[type] || {});
-        });
+        chrome.storage.local.get([type], result => resolve(result[type] || {}));
     });
 }
 
-// Veri kaydetme
 function saveData(type, obj) {
     return new Promise(resolve => {
         chrome.storage.local.set({ [type]: obj }, resolve);
     });
 }
 
-// Aktif anahtarı çek
+// Aktif anahtarı çek / ayarla
 function getActiveKey(type) {
     return new Promise(resolve => {
-        chrome.storage.local.get([`active-${type}-key`], result => {
-            resolve(result[`active-${type}-key`] || null);
-        });
+        chrome.storage.local.get([`active-${type}-key`], result => resolve(result[`active-${type}-key`] || null));
     });
 }
 
-// Aktif anahtarı ayarla
-function setActiveKey(type, key) {updateActiveData();
+function setActiveKey(type, key) {
     chrome.storage.local.set({ [`active-${type}-key`]: key }, () => updateUI(type));
 }
 
@@ -99,10 +82,7 @@ async function renderTable(type) {
             </td>
         `;
 
-        // Aktif yap butonu
         row.querySelector('.btn-activate').addEventListener('click', () => setActiveKey(type, key));
-
-        // Sil butonu
         row.querySelector('.btn-delete').addEventListener('click', async () => {
             if (confirm(`'${key}' verisini silmek istediğinizden emin misiniz?`)) {
                 delete data[key];
@@ -119,7 +99,15 @@ async function renderTable(type) {
         tbody.appendChild(row);
     });
 }
-async function checkAndRedirect() {
+
+// Program genelinde sadece ilk kez tüm veri tipleri dolduğunda yönlendirme
+async function checkAndRedirectOnce() {
+    const redirectInfo = await new Promise(resolve =>
+        chrome.storage.local.get(['hasRedirected'], result => resolve(result.hasRedirected))
+    );
+
+    if (redirectInfo) return;
+
     const botTokensData = await getData('botTokens');
     const chatIdsData = await getData('chatIds');
     const affiliateTagsData = await getData('affiliateTags');
@@ -127,10 +115,13 @@ async function checkAndRedirect() {
     if (Object.keys(botTokensData).length > 0 &&
         Object.keys(chatIdsData).length > 0 &&
         Object.keys(affiliateTagsData).length > 0) {
-        window.location.href = 'popup.html';
+        chrome.storage.local.set({ hasRedirected: true }, () => {
+            window.location.href = 'popup.html';
+        });
     }
 }
-// Ekleme fonksiyonu
+
+// Form işlemleri
 function setupForm(type) {
     const form = document.getElementById(`form-${type}`);
     form.addEventListener('submit', async (e) => {
@@ -151,11 +142,9 @@ function setupForm(type) {
 
         form.reset();
 
-        // Buraya ekledik: her veri eklendiğinde kontrol ve yönlendirme
-        await checkAndRedirect();
+        await checkAndRedirectOnce();
     });
 }
-
 
 // UI Güncelle
 async function updateUI(type) {
@@ -174,29 +163,16 @@ async function updateUI(type) {
 }
 
 // Başlangıç
-document.addEventListener('DOMContentLoaded', async () => {    
-  const backButton = document.getElementById('backButton');
-    if (backButton) {
-        backButton.addEventListener('click', () => {
-            window.location.href = 'popup.html';
-        });
-    }
-    // Sekme yönetimi
-    document.querySelectorAll('.tab-button').forEach(btn => {
-        btn.addEventListener('click', () => openTab(btn.dataset.tab));
-    });
+document.addEventListener('DOMContentLoaded', async () => {
+    const backButton = document.getElementById('backButton');
+    if (backButton) backButton.addEventListener('click', () => window.location.href = 'popup.html');
 
-    // Tablolar ve formlar
+    document.querySelectorAll('.tab-button').forEach(btn => btn.addEventListener('click', () => openTab(btn.dataset.tab)));
+
     for (const type of DATA_TYPES) {
         await renderTable(type);
         setupForm(type);
     }
-    await updateUI(); // Tüm verileri başlangıçta bir kez çekmek için
 
-
-
-
-  
+    await updateUI();
 });
-
- 
