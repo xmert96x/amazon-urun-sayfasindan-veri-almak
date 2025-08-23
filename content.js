@@ -12,14 +12,22 @@ function extractProduct() {
   const titleEl = document.querySelector('#productTitle');
   const title = titleEl ? titleEl.innerText.trim() : null;
 
-  let price = null;
-  const priceEl = document.querySelector('#corePriceDisplay_desktop_feature_div .aok-offscreen') ||
-                  document.querySelector('span.a-price span.a-offscreen') ||
-                  document.querySelector('#usedBuySection .offer-price') ||
-                  document.querySelector('.a-offscreen');
-  if (priceEl) price = priceEl.innerText.trim();
+let price = null;
+
+// Birden fazla seçici ile fiyatı bulmaya çalışın.
+const priceEl = document.querySelector('#corePriceDisplay_desktop_feature_div .aok-offscreen') ||
+                document.querySelector('span.a-price span.a-offscreen') ||
+                document.querySelector('#usedBuySection .offer-price') ||
+                document.querySelector('.aok-offscreen');
+
+// Eğer fiyat elemanı bulunduysa, fiyatı alın.
+if (priceEl) {
+    price = priceEl.innerText.trim();
+}
+
  
 
+  
 function getProductSize() {
   // 1. Genişleyen twister düzenini kontrol et
   const expanderLabel = document.querySelector('#inline-twister-expander-header-size_name .a-color-secondary');
@@ -66,7 +74,7 @@ const stockInfo =
     document.querySelector(
         '#availabilityInsideBuyBox_feature_div #availability span.a-size-medium.a-color-success,' +
         '#availabilityInsideBuyBox_feature_div #availability span.a-size-base.a-color-price.a-text-bold,' +
-        '#outOfStock .a-color-price.a-text-bold'
+        '#outOfStock .a-color-price.a-text-bold,' + '#availability .a-size-base.a-color-price.a-text-bold'
     )?.textContent.trim() || '';
 
      

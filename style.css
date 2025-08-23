@@ -1,0 +1,231 @@
+/* popup.css */
+
+/* General styles for the body and overall layout */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #eef1f5; /* Lighter, modern background */
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+   
+  box-sizing: border-box;
+  color: #333;
+  min-width: 320px;
+  max-width: 500px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;    
+}
+
+/* Hide scrollbars for a cleaner look */
+html, body {
+  width: fit-content;
+  height:fit-content;
+   /* Yalnız yatay scroll gizle */
+  
+}
+.scroll-area::-webkit-scrollbar {
+  display: none;
+}
+
+/* Main heading style */
+h3 {
+  font-size: 28px;
+  color: #2c3e50; /* A darker, professional blue-gray */
+  margin-bottom: 25px;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* Card container for a modern, elevated look */
+.card {
+  background-color: #ffffff;
+  padding: 25px 30px;
+  border-radius: 20px; /* More rounded corners */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); /* Deeper shadow for a floating effect */
+  width: 100%; /* Use 100% for better responsiveness */
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Increased gap for better spacing */
+  margin-bottom: 20px;   width: 100%;
+  max-width: 480px;    max-width: 480px; 
+  max-height: 580px; /* Hafif boşluk bırak */
+  overflow: hidden;
+}
+
+/* Info message styling for a cleaner look */
+/* Optimized Info message styling */
+.info-message, .info {
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+  padding: 14px 22px; /* Daha dengeli padding */
+  margin-bottom: 20px;
+  border-radius: 18px; /* Kart ve butonlarla uyumlu köşe */
+  background-color: #ffffff; /* Soft beyaz, kartlarla bütünleşik */
+  color: #34495e; /* Daha okunaklı ve uyumlu koyu gri-mavi */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* Hafif ve modern gölge */
+  transition: all 0.3s ease, transform 0.25s ease;
+  transform: translateY(0);
+}
+
+/* Hover efekti */
+.info-message:hover, .info:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
+}
+ 
+  #info .first-line {
+  font-size: 20px;
+}
+
+/* Toggle switch container */
+.toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-radius: 15px;
+  background-color: #f5f7fa; /* Slightly different background for distinction */
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+.toggle-container:hover {
+  background-color: #ebf1f7;
+  transform: translateY(-2px);
+}
+
+/* Custom checkbox/toggle switch styling */
+.toggle-container input[type="checkbox"] {
+  appearance: none;
+  width: 45px; /* Wider toggle */
+  height: 25px; /* Taller toggle */
+  background-color: #aeb4be; /* Neutral gray for off state */
+  border-radius: 12.5px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.toggle-container input[type="checkbox"]:checked {
+  background-color: #27ae60; /* Vibrant green for on state */
+}
+.toggle-container input[type="checkbox"]::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 19px;
+  height: 19px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+.toggle-container input[type="checkbox"]:checked::after {
+  transform: translateX(20px);
+}
+
+/* Text inputs and textareas */
+input[type="number"], textarea {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 15px;
+  border: 1px solid #dcdfe6;
+  outline: none;
+  box-sizing: border-box;
+  background-color: #f9fafb;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+input[type="number"]:focus, textarea:focus {
+  border-color: #3498db; /* A pleasant blue focus color */
+  box-shadow: 0 0 8px rgba(52, 152, 219, 0.2);
+}
+
+/* Button styles with modern look */
+button {
+  padding: 15px;
+  font-size: 17px;
+  font-weight: 600;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.1); /* Deeper button shadow */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: white; /* Default text color for buttons */
+}
+#sendBtn {
+  background-color: #2ecc71; /* A fresh, appealing green */
+}
+#sendBtn:hover {
+  background-color: #27ae60; /* Darker green on hover */
+  transform: translateY(-3px); /* More pronounced lift effect */
+  box-shadow: 0 10px 20px rgba(46, 204, 113, 0.4);
+}
+#settingsBtn {
+  background-color: #3498db; /* A calming blue */
+}
+#settingsBtn:hover {
+  background-color: #2980b9; /* Darker blue on hover */
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(52, 152, 219, 0.4);
+}
+button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+  opacity: 0.8;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Status message styling */
+#statusMessage {
+  font-size: 16px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  text-align: center;
+  transition: all 0.3s ease;
+  display: none;
+}
+#statusMessage.success {
+  display: block;
+  color: #1a5631;
+  background-color: #d4f7e2;
+  border-color: #92e6b2;
+}
+#statusMessage.error {
+  display: block;
+  color: #7d2a2a;
+  background-color: #f7d4d4;
+  border-color: #e69292;
+}
+#statusMessage.warning {
+  display: block;
+  color: #83670c;
+  background-color: #fcf6d6;
+  border-color: #e6d892;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 400px) {
+  body {
+    padding: 15px;
+  }
+  .card {
+    padding: 20px 25px;
+  }
+  h3 {
+    font-size: 24px;
+  }
+}
+textarea {
+     resize: none;}
+     label{cursor: pointer;}

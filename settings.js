@@ -1,104 +1,188 @@
-function toggleVisibility(id) {
-  const input = document.getElementById(id);
-  if (input) {  
-    input.type = input.type === "password" ? "text" : "password"; 
-    input.style.padding = "12px 40px 12px 12px";
-  }
+const DATA_TYPES = ['botTokens', 'chatIds', 'affiliateTags'];
+let aktif_token = null;
+let kanal_id = null;
+let aktif_tag = null;
+
+// Sekme yönetimi
+function openTab(tabName) {
+   chrome.storage.local.set({ activeTabName: tabName });
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    document.querySelector(`.tab-button[data-tab="${tabName}"]`).classList.add('active');
 }
+    async function updateActiveData() {
+    chrome.storage.local.get([
+        'botTokens', 'chatIds', 'affiliateTags',
+        'active-botTokens-key', 'active-chatIds-key', 'active-affiliateTags-key',
+        'activeTabName'
+    ], (res) => {
+        tempres = res;
+        aktif_token = res['active-botTokens-key'] ? res.botTokens[res['active-botTokens-key']] : null;
+        kanal_id = res['active-chatIds-key'] ? res.chatIds[res['active-chatIds-key']] : null;
+        aktif_tag = res['active-affiliateTags-key'] ? res.affiliateTags[res['active-affiliateTags-key']] : null;
 
-document.addEventListener('DOMContentLoaded', () => {
-  const toggleBotToken = document.getElementById('toggleBotToken');
-  const toggleChannelId = document.getElementById('toggleChannelId');
-  const botTokenInput = document.getElementById('botToken');
-  const channelIdInput = document.getElementById('channelId');
-    const submitBtn = document.getElementById('submitBtn');
-const refTagInput = document.getElementById('refTag');
-const backButton = document.getElementById('backButton');
-
-  // Storage'dan değerleri yükle
-  chrome.storage.local.get(["BOT_TOKEN", "CHANNEL_CHAT_ID","AFFILIATE_TAG"], (data) => {
-    if (data.BOT_TOKEN !== undefined) botTokenInput.value = data.BOT_TOKEN;
-    if (data.CHANNEL_CHAT_ID !== undefined) channelIdInput.value = data.CHANNEL_CHAT_ID;
-   if (data.AFFILIATE_TAG !== undefined) refTagInput.value = data.AFFILIATE_TAG;
-if (data.CHANNEL_CHAT_ID === undefined || data.BOT_TOKEN === undefined || data.AFFILIATE_TAG === undefined) {
-    backButton.style.display = 'none';
-} else {
-    backButton.style.display = 'block';
-}
-       }
-  
-);
-
-
-
-  // Görünürlüğü değiştir
-  if (toggleBotToken) {
-    toggleBotToken.addEventListener('click', () => toggleVisibility('botToken'));
-  }
-  if (toggleChannelId) {
-    toggleChannelId.addEventListener('click', () => toggleVisibility('channelId'));
-  }
-
-  // Gönder butonu
-if (submitBtn) {
-  submitBtn.addEventListener('click', (event) => {
-    event.preventDefault(); // Form submit olmasın
-
-    // Inputların geçerli olup olmadığını kontrol et
-    if (!botTokenInput.checkValidity() || !channelIdInput.checkValidity()) {
-      // Eğer inputlar required veya pattern dolu değilse, tarayıcı uyarısı göster
-      botTokenInput.reportValidity();
-      channelIdInput.reportValidity();
-      return; // Kaydetme işlemi yapılmaz
-    }
-
-    // Inputlar geçerliyse storage'a kaydet
-    const botToken = botTokenInput.value.trim();
-    const channelId = channelIdInput.value.trim();
-    chrome.storage.local.set({ BOT_TOKEN: botToken, CHANNEL_CHAT_ID: channelId ,  AFFILIATE_TAG: refTagInput.value.trim() }, () => {
-  chrome.storage.local.get(["BOT_TOKEN", "CHANNEL_CHAT_ID","AFFILIATE_TAG"], (data) => {
-  if (data.BOT_TOKEN !== undefined) botTokenInput.value = data.BOT_TOKEN;
-      if (data.CHANNEL_CHAT_ID !== undefined) channelIdInput.value = data.CHANNEL_CHAT_ID;
-         if (data.AFFILIATE_TAG !== undefined) refTagInput.value = data.AFFILIATE_TAG;
-  // Burada callback içinde kontrol yap
-if (
-  channelIdInput.value === data.CHANNEL_CHAT_ID &&
-  botTokenInput.value === data.BOT_TOKEN &&
-  refTagInput.value === data.AFFILIATE_TAG
-){
-   
-  if (backButton.style.display === 'none') {
- 
-  window.location.href = 'popup.html';
-}
-   
-  const notif = document.getElementById('notification');
-  notif.style.display = 'block';
-  
-  // animasyon ile görünür yap
-  setTimeout(() => {
-    notif.style.opacity = 1;
-    notif.style.transform = 'translateY(0)';
-    notif.innerHTML="Başarı ile kaydedildi!"
-  }, 10);
-
-  // 3 saniye sonra kaybolacak
-  setTimeout(() => {
-    notif.style.opacity = 0;
-    notif.style.transform = 'translateY(-20px)';
-    setTimeout(() => {
-      notif.style.display = 'none';
-    }, 500);
-  }, 3000);
-  }
-});
-
+        // Öncelik sırası: token -> kanal -> tag
+        if (!aktif_token) {
+            openTab('botTokens');
+        } else if (!kanal_id) {
+            openTab('chatIds');
+        } else if (!aktif_tag) {
+            openTab('affiliateTags');
+        } else if (res.activeTabName) {
+            // Hepsi varsa, son açık olan tabı aç
+            openTab(res.activeTabName);
+        } else {
+            // Hiç biri yoksa varsayılan
+            openTab('botTokens');
+        }
     });
-  });
 }
 
-
-  // Geri butonu
  
-  if (backButton) backButton.addEventListener('click', () => window.history.back());
+updateActiveData();
+
+// Storage değiştiğinde otomatik güncelle
+chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName === 'local') updateActiveData();
 });
+
+// Veri çekme
+function getData(type) {
+    return new Promise(resolve => {
+        chrome.storage.local.get([type], (result) => {
+            resolve(result[type] || {});
+        });
+    });
+}
+
+// Veri kaydetme
+function saveData(type, obj) {
+    return new Promise(resolve => {
+        chrome.storage.local.set({ [type]: obj }, resolve);
+    });
+}
+
+// Aktif anahtarı çek
+function getActiveKey(type) {
+    return new Promise(resolve => {
+        chrome.storage.local.get([`active-${type}-key`], result => {
+            resolve(result[`active-${type}-key`] || null);
+        });
+    });
+}
+
+// Aktif anahtarı ayarla
+function setActiveKey(type, key) {updateActiveData();
+    chrome.storage.local.set({ [`active-${type}-key`]: key }, () => updateUI(type));
+}
+
+// Tabloyu render et
+async function renderTable(type) {
+    const tbody = document.getElementById(`botTableBody-${type}`);
+    if (!tbody) return;
+
+    const data = await getData(type);
+    const activeKey = await getActiveKey(type);
+
+    tbody.innerHTML = "";
+    Object.keys(data).forEach(key => {
+        const row = document.createElement('tr');
+        if (key === activeKey) row.classList.add('active');
+
+        row.innerHTML = `
+            <td>${key}</td>
+            <td>${data[key]}</td>
+            <td class="action-buttons">
+                <button class="btn-activate" ${key === activeKey ? 'disabled' : ''}>Aktif Yap</button>
+                <button class="btn-delete" ${key === activeKey ? 'disabled' : ''}>Sil</button>
+            </td>
+        `;
+
+        // Aktif yap butonu
+        row.querySelector('.btn-activate').addEventListener('click', () => setActiveKey(type, key));
+
+        // Sil butonu
+        row.querySelector('.btn-delete').addEventListener('click', async () => {
+            if (confirm(`'${key}' verisini silmek istediğinizden emin misiniz?`)) {
+                delete data[key];
+                await saveData(type, data);
+                const activeKeyNow = await getActiveKey(type);
+                if (key === activeKeyNow) {
+                    const remainingKeys = Object.keys(data);
+                    if (remainingKeys.length > 0) setActiveKey(type, remainingKeys[0]);
+                    else chrome.storage.local.remove(`active-${type}-key`, () => updateUI(type));
+                } else updateUI(type);
+            }
+        });
+
+        tbody.appendChild(row);
+    });
+}
+
+// Ekleme fonksiyonu
+function setupForm(type) {
+    const form = document.getElementById(`form-${type}`);
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const key = document.getElementById(`keyInput-${type}`).value.trim();
+        const value = document.getElementById(`valueInput-${type}`).value.trim();
+        if (!key || !value) return;
+
+        const data = await getData(type);
+        if (data[key] && !confirm(`'${key}' adında bir veri zaten var. Üzerine yazmak istiyor musunuz?`)) return;
+
+        data[key] = value;
+        await saveData(type, data);
+
+        const activeKey = await getActiveKey(type);
+        if (!activeKey) setActiveKey(type, key);
+        else updateUI(type);
+
+        form.reset();
+    });
+}
+
+// UI Güncelle
+async function updateUI(type) {
+    await renderTable(type);
+    const botTokensData = await getData('botTokens');
+    const chatIdsData = await getData('chatIds');
+    const affiliateTagsData = await getData('affiliateTags');
+
+    const activeBotTokenKey = await getActiveKey('botTokens');
+    const activeChatIdKey = await getActiveKey('chatIds');
+    const activeAffiliateTagKey = await getActiveKey('affiliateTags');
+
+    aktif_token = activeBotTokenKey ? botTokensData[activeBotTokenKey] : null;
+    kanal_id = activeChatIdKey ? chatIdsData[activeChatIdKey] : null;
+    aktif_tag = activeAffiliateTagKey ? affiliateTagsData[activeAffiliateTagKey] : null;
+}
+
+// Başlangıç
+document.addEventListener('DOMContentLoaded', async () => {    
+  const backButton = document.getElementById('backButton');
+    if (backButton) {
+        backButton.addEventListener('click', () => {
+            window.location.href = 'popup.html';
+        });
+    }
+    // Sekme yönetimi
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.addEventListener('click', () => openTab(btn.dataset.tab));
+    });
+
+    // Tablolar ve formlar
+    for (const type of DATA_TYPES) {
+        await renderTable(type);
+        setupForm(type);
+    }
+    await updateUI(); // Tüm verileri başlangıçta bir kez çekmek için
+
+
+
+
+  
+});
+
+ 

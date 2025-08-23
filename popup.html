@@ -1,186 +1,58 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Amazon → Telegram</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    /* Genel Body ve Kapsayıcı */
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f5f6fa;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      box-sizing: border-box;
-      color: #2f3640;
-      /* Açılır pencere boyutunu belirlemek için güncellendi */
-      min-width: 320px;
-      max-width: 500px;
-    }
+  <!DOCTYPE html>
+  <html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon → Telegram</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h3 style="   margin-top: 0;           
+  margin-bottom: 0.5em;">Amazon → Telegram</h3>
+    <!-- Info mesajını dinamik hale getirmek için boş bir div olarak bırakın, içeriği JavaScript ile doldurulacaktır. -->
+    <div id="info" class="info"></div>
+    <div class="card">
+      <div class="toggle-container">
+        <label for="soundToggle">🔊 Sesli Gönder</label>
+        <input type="checkbox" id="soundToggle"   />
+      </div>
 
-    h3 {
-      font-size: 28px;
-      color: #2f3640;
-      margin-bottom: 25px;
-      text-align: center;
-    }
+      <div class="toggle-container">
+        <label for="autoPriceToggle">💰 Fiyatı Otomatik Al</label>
+        <input type="checkbox" id="autoPriceToggle"   />
+      </div>
 
-    .card {
-      background-color: #fff;
-      padding: 25px 30px;
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      width: 95%; /* Açılır pencerenin %95'ini kaplar */
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
+      <div id="priceInputs" style="display:none; flex-direction:column; gap:10px;">
+        <label for="quantityInput">Adet:</label>
+        <input type="number" id="quantityInput" min="1" value="1" />
+    
+        <label for="totalPriceInput">Toplam Fiyat (TL):</label>
+        <input type="number" id="totalPriceInput" min="0" step="0.01" />
+      </div>
 
-    /* Toggle Stilleri */
-    .toggle-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 15px;
-      border-radius: 10px;
-      background-color: #f5f6fa;
-      font-size: 16px;
-      font-weight: 500;
-    }
+      <label for="additionalInfoInput">İlave Bilgi (opsiyonel):</label>
+      <textarea id="additionalInfoInput" rows="3" placeholder="İsteğe bağlı bilgi girin"></textarea>
 
-    .toggle-container input[type="checkbox"] {
-      appearance: none;
-      width: 40px;
-      height: 20px;
-      background-color: #ccc;
-      border-radius: 10px;
-      position: relative;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
+      <div id="statusMessage"></div>
 
-    .toggle-container input[type="checkbox"]:checked {
-      background-color: #4cd137;
-    }
-
-    .toggle-container input[type="checkbox"]::after {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 16px;
-      height: 16px;
-      background-color: white;
-      border-radius: 50%;
-      transition: transform 0.3s;
-    }
-
-    .toggle-container input[type="checkbox"]:checked::after {
-      transform: translateX(20px);
-    }
-
-    /* Buton Stilleri */
-    button {
-      padding: 14px;
-      font-size: 17px;
-      font-weight: 600;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    #sendBtn {
-      background-color: #4cd137;
-      color: white;
-    }
-
-    #sendBtn:hover {
-      background-color: #44bd32;
-      transform: translateY(-2px);
-    }
-
-    #settingsBtn {
-      background-color: #00a8ff;
-      color: white;
-    }
-
-    #settingsBtn:hover {
-      background-color: #0097e6;
-      transform: translateY(-2px);
-    }
-
-    button:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-    /* Durum Mesajı Stilleri */
-    #statusMessage {
-      font-size: 16px;
-      padding: 14px 20px;
-      border-radius: 10px;
-      border: 1px solid transparent;
-      text-align: center;
-      transition: all 0.3s ease;
-      display: none;
-    }
-
-    #statusMessage.success {
-      display: block;
-      color: #155724;
-      background-color: #d4edda;
-      border-color: #c3e6cb;
-    }
-
-    #statusMessage.error {
-      display: block;
-      color: #721c24;
-      background-color: #f8d7da;
-      border-color: #f5c6cb;
-    }
-
-    #statusMessage.warning {
-      display: block;
-      color: #856404;
-      background-color: #fff3cd;
-      border-color: #ffeeba;
-    }
-  </style>
-</head>
-<body>
-  <h3>Amazon → Telegram</h3>
-
-  <div class="card">
-    <div class="toggle-container">
-      <label for="soundToggle">🔊 Sesli Gönder</label>
-      <input type="checkbox" id="soundToggle" checked />
+      <button id="sendBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send">
+          <path d="m22 2-7 20-4-9-9-4 20-7Z"/>
+          <path d="M15 7 9 13"/>
+        </svg>
+        Aktif Sayfayı Gönder
+      </button>
+      <button id="settingsBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings">
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.39a2 2 0 0 0 .73 2.73l.15.08a2 2 0 0 1 1 1.74v.44a2 2 0 0 1-1 1.74l-.15.08a2 2 0 0 0-.73 2.73l.22.39a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73v.18a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.44a2 2 0 0 1 1-1.74l.15-.08a2 2 0 0 0 .73-2.73l-.22-.39a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        Ayarlar
+      </button>
     </div>
-
-    <div id="statusMessage"></div>
-
-    <button id="sendBtn">
-      📤 Aktif Sayfayı Gönder
-    </button>
-    <button id="settingsBtn">
-      ⚙️ Ayarlar
-    </button>
-  </div>
-  <script src="popup.js"></script>
-</body>
-</html>
+    <script src="popup.js"></script>
+  </body>
+  </html>
