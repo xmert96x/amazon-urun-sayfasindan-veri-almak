@@ -162,9 +162,10 @@ let manuelprice = escapeMarkdownV2(
      .join(','))
 );
     const captionParts = [];
+    const stockText = payload.stockInfo ? ` \\(${escapeMarkdownV2(payload.stockInfo)}\\)` : '';
     if (title) captionParts.push(`🛍 *${title}[🔎](${searchLinkSafe})*`);
        if (payload.offerData && Object.keys(payload.offerData).length >= 2) { if (price) {
-       const stockText = payload.stockInfo ? ` \\(${escapeMarkdownV2(payload.stockInfo)}\\)` : '';
+       
     
 if (autoPriceToggle === true || payload.source == 'shortcut') {
     captionParts.push(`💸 *Fiyat*: ${price}${stockText}`);
@@ -176,7 +177,7 @@ if (autoPriceToggle === true || payload.source == 'shortcut') {
 }
 
 
-}}
+}}else  captionParts.push(`${stockText}`); 
     if (promosText) captionParts.push(promosText);
     captionParts.push(`🔗 [Amazon’da Gör](${affiliateUrlSafe})`);
     if (payload.selectedSize) {

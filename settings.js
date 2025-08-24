@@ -160,6 +160,16 @@ async function updateUI(type) {
     aktif_token = activeBotTokenKey ? botTokensData[activeBotTokenKey] : null;
     kanal_id = activeChatIdKey ? chatIdsData[activeChatIdKey] : null;
     aktif_tag = activeAffiliateTagKey ? affiliateTagsData[activeAffiliateTagKey] : null;
+    if (backButton) {
+    // Eğer tüm aktif veriler null ise butonu gizle
+    if (!activeBotTokenKey && !activeChatIdKey && !activeAffiliateTagKey) {
+        backButton.style.display = 'none';
+    } else {
+        // Aksi durumda geri butonunu etkinleştir
+        backButton.style.display = 'block';
+    }
+}
+
 }
 
 // Başlangıç

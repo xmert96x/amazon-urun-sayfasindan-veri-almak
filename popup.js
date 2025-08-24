@@ -54,9 +54,12 @@
             if (autoPriceToggle.checked) {additionalInfoInput.rows="3";
                 priceInputs.style.display = 'none';
                 quantityInput.required = false;
-                totalPriceInput.required = false;
+                totalPriceInput.required = false;   quantityInput.value=null;
+                totalPriceInput.value=null;
             } else {additionalInfoInput.rows="3";
-                priceInputs.style.display = 'flex';
+                priceInputs.style.display = 'block';
+                quantityInput.value=null;
+                totalPriceInput.value=null;
                 quantityInput.required = true;
                 totalPriceInput.required = true;
             }

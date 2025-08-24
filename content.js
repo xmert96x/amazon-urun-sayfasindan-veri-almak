@@ -71,11 +71,12 @@ if (imgEl) {
     imgEl.src;
 }
 const stockInfo = 
-    document.querySelector(
-        '#availabilityInsideBuyBox_feature_div #availability span.a-size-medium.a-color-success,' +
-        '#availabilityInsideBuyBox_feature_div #availability span.a-size-base.a-color-price.a-text-bold,' +
-        '#outOfStock .a-color-price.a-text-bold,' + '#availability .a-size-base.a-color-price.a-text-bold'
-    )?.textContent.trim() || '';
+  document.querySelector(
+    '#availabilityInsideBuyBox_feature_div #availability span.a-size-medium.a-color-success, ' +
+    '#availabilityInsideBuyBox_feature_div #availability span.a-size-base.a-color-price.a-text-bold, ' +
+    '#availability .a-size-base.a-color-price.a-text-bold, ' +
+    '#outOfStock .a-color-price.a-text-bold'
+)?.textContent.trim() || '';
 
      
    

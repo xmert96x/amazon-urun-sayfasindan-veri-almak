@@ -227,5 +227,6 @@ button:disabled {
   }
 }
 textarea {
-     resize: none;}
+     resize: none;
+    min-height: 50px;}
      label{cursor: pointer;}
