@@ -385,7 +385,7 @@ chrome.commands.onCommand.addListener((command) => {
                             }
                         });
                     } else {
-                     createNotification("Hata", "Lütfen bir Amazon ürün sayfasında olun.");
+                     createNotification("Hata", "Lütfen bir Amazon sayfasında olun.");
                     }
                 });
             }
