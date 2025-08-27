@@ -131,7 +131,16 @@ if ((firstTwoValues[0].includes('Amazon.com.tr') && firstTwoValues[1].includes('
  affiliateUrl+="&smid=A1UNQM1SR2CHM&th=1";
 }}
  
-
+if (!affiliateUrl.includes('smid=') && payload.url) {
+    // payload.url içinden smid parametresini çek
+    const smidMatch = payload.url.match(/[?&]smid=([^&]+)/);
+    
+    // Eğer smid bulunduysa affiliateUrl'e ekle
+    if (smidMatch && smidMatch[1]) {
+        // Eğer URL zaten parametre içeriyorsa & ile ekle, yoksa ? ile başlat
+        affiliateUrl += `&smid=${smidMatch[1]}&th=1`;
+    }
+}
  
 
     const affiliateUrlSafe = escapeMarkdownV2(affiliateUrl);
