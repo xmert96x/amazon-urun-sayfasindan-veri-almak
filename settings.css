@@ -317,5 +317,90 @@ th, td {
 .tbody-wrapper tr:hover {
     background-color: #f5f7fa;
 }
+ 
+
+    /* Buton */
+    .btn {border:none;
+  position:absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 16px;
+  user-select: none;
+  background-color: #f0f0f0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: all 0.3s ease; /* animasyon efekti */
+    }
 
 
+
+    .btn:hover {
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25), 
+              0 6px 20px rgba(0,0,0,0.15); /* daha derin gölge */
+  transform: translateY(-2px); /* hafif yukarı kalkma efekti */
+} #notification {  text-align: center;
+  background-color: #d4edda; /* A light green color for success */
+  color: #155724; /* A dark green for text */
+  padding: 15px 25px;
+  border-radius: 8px;
+  border: 1px solid #c3e6cb;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  z-index: 1000;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  opacity: 0;
+  display: none ;
+  transform: translateY(-20px);
+  }
+
+    /* Arkaplan (Lightbox Overlay) */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    /* Açıkken aktif */
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* İçerik kutusu */
+    .lightbox-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 400px;
+      max-width: 90%;
+      text-align: center;
+      transform: scale(0.8);
+      transition: transform 0.4s ease;
+    }
+
+    .lightbox.active .lightbox-content {
+      transform: scale(1);
+    }
+
+    /* Kapatma butonu */
+    .close {
+      margin-top: 20px;
+      padding: 8px 16px;
+      border: none;
+      background: crimson;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+
+    

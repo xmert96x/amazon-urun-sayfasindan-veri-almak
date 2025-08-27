@@ -311,7 +311,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 
 
-
+function createNotification(title, message) {
+    chrome.notifications.create({
+        type: "basic",
+        iconUrl: chrome.runtime.getURL("amazon-notification.png"),
+        title: title,
+        message: message
+    });
+}
  
 // Kısayol tuşu dinleyici
 chrome.commands.onCommand.addListener((command) => {
@@ -324,47 +331,22 @@ chrome.commands.onCommand.addListener((command) => {
                         if (response && response.success) {
                             response.data.source = 'shortcut';
                             sendProduct(response.data).then(() => {
-                                chrome.notifications.create({
-                                    type: "basic",
-                                    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
-                                    title: "Başarılı",
-                                    message: "✔ Telegram’a başarıyla gönderildi!"
-                                });
+                       createNotification("Başarılı", "✔ Telegram’a başarıyla gönderildi!");
                             }).catch((err) => {
                                 console.error('Kısayol ile gönderme hatası:', err);
-                                chrome.notifications.create({
-                                    type: "basic",
-                                    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
-                                    title: "Hata",
-                                    message: 'Kısayol ile gönderme hatası: ' + err
-                                });
+                         createNotification("Hata", 'Kısayol ile gönderme hatası: ' + err);
                             });
                         } else {
                             console.error('Ürün verisi alınamadı.');
-                            chrome.notifications.create({
-                                type: "basic",
-                                iconUrl: chrome.runtime.getURL("amazon-notification.png"),
-                                title: "Hata",
-                                message: "Ürün verisi alınamadı."
-                            });
+                           createNotification("Hata", "Ürün verisi alınamadı.");
                         }
                     });
                 } catch (err) {
                     console.error('Kısayol ile gönderme hatası:', err);
-                    chrome.notifications.create({
-                        type: "basic",
-                        iconUrl: chrome.runtime.getURL("amazon-notification.png"),
-                        title: "Hata",
-                        message: 'Kısayol ile gönderme hatası: ' + err
-                    });
+                    createNotification("Hata", 'Kısayol ile gönderme hatası: ' + err);
                 }
             } else {
-                chrome.notifications.create({
-                    type: "basic",
-                    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
-                    title: "Hata",
-                    message: "Lütfen bir Amazon ürün sayfasında olun."
-                });
+               createNotification("Hata", "Lütfen bir Amazon ürün sayfasında olun.");
             }
         });
     }
@@ -383,38 +365,18 @@ chrome.commands.onCommand.addListener((command) => {
                         if (response && response.success) {
                             response.data.source = 'shortcut';
                             sendLink(response.data).then(() => {
-                                chrome.notifications.create({
-                                    type: "basic",
-                                    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
-                                    title: "Başarılı",
-                                    message: "✔ Telegram’a başarıyla gönderildi!"
-                                });
+                             createNotification("Başarılı","✔ Telegram’a başarıyla gönderildi!");
                             }).catch((err) => {
                                 console.error('Kısayol ile gönderme hatası:', err);
-                                chrome.notifications.create({
-                                    type: "basic",
-                                    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
-                                    title: "Hata",
-                                    message: 'Kısayol ile gönderme hatası: ' + err
-                                    });
+                                 createNotification("Hata", 'Kısayol ile gönderme hatası: ' + err);
                                 });
                             } else {
                                 console.error('Kısayol ile gönderme hatası: Ürün verisi alınamadı.');
-                                chrome.notifications.create({
-                                    type: "basic",
-                                    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
-                                    title: "Hata",
-                                    message: "Ürün verisi alınamadı."
-                                });
+                            createNotification("Hata", "Ürün verisi alınamadı.");
                             }
                         });
                     } else {
-                        chrome.notifications.create({
-                            type: "basic",
-                            iconUrl: chrome.runtime.getURL("amazon-notification.png"),
-                            title: "Hata",
-                            message: "Lütfen bir Amazon ürün sayfasında olun."
-                        });
+                     createNotification("Hata", "Lütfen bir Amazon ürün sayfasında olun.");
                     }
                 });
             }

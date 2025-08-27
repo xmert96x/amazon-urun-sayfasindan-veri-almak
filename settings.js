@@ -160,13 +160,11 @@ async function updateUI(type) {
     aktif_token = activeBotTokenKey ? botTokensData[activeBotTokenKey] : null;
     kanal_id = activeChatIdKey ? chatIdsData[activeChatIdKey] : null;
     aktif_tag = activeAffiliateTagKey ? affiliateTagsData[activeAffiliateTagKey] : null;
-    if (backButton) {
-    // Eğer tüm aktif veriler null ise butonu gizle
-    if (!activeBotTokenKey && !activeChatIdKey && !activeAffiliateTagKey) {
-        backButton.style.display = 'none';
+ if (backButton) {
+    if (aktif_token && kanal_id && aktif_tag) {
+        backButton.style.display = 'block'; // hepsi aktifse göster
     } else {
-        // Aksi durumda geri butonunu etkinleştir
-        backButton.style.display = 'block';
+        backButton.style.display = 'none'; // değilse gizle
     }
 }
 
@@ -185,4 +183,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     await updateUI();
+
+
+      const openBtn = document.getElementById('openBtn');
+  const closeBtn = document.getElementById('closeBtn');
+  const lightbox = document.getElementById('lightbox');
+
+  openBtn.addEventListener('click', () => {
+    lightbox.classList.add('active');
+  });
+
+  closeBtn.addEventListener('click', () => {
+    lightbox.classList.remove('active');
+  });
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) {
+      lightbox.classList.remove('active');
+    }
+  });
 });
+ 
