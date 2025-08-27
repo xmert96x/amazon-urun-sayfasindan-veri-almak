@@ -262,7 +262,7 @@ console.log(payload.url);
 
 const captionParts = [];
 captionParts.push(escapeMarkdownV2(payload.pageTitle));
-captionParts.push("🔗 "+escapeMarkdownV2(urlObj.toString()));
+captionParts.push("🔗"+escapeMarkdownV2(urlObj.toString()));
 captionParts.push(`\\#işbirliği \\#amazon`);
 
 const text = captionParts.filter(Boolean).join("\n\n");
