@@ -88,6 +88,8 @@ async function fetchPrice() {
             kanal_id = res['active-chatIds-key'] ? res.chatIds[res['active-chatIds-key']] : null;
             aktif_tag = res['active-affiliateTags-key'] ? res.affiliateTags[res['active-affiliateTags-key']] : null;
 
+
+            
             if (!aktif_token || !kanal_id || !aktif_tag) {
                 window.location.href = 'settings.html';
             } else {
@@ -288,6 +290,7 @@ async function fetchPrice() {
 
         shareLinkBtn.addEventListener('click', async () => {
             shareLinkBtn.disabled=true;
+             chrome.storage.local.set({ additionalInfoInput: additionalInfoInput.value });
    showStatus('');
 
         try {

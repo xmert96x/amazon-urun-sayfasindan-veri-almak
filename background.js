@@ -114,7 +114,7 @@ async function sendProduct(payload) { // Check if the payload has the 'source' p
  //console.log(autoPriceToggle.toString()+" "+quantityInput+" "+totalPriceInput);
  
     const asin = extractASIN(payload.url);
-    if (!asin) throw new Error('ASIN bulunamadı');
+    if (!asin) throw new Error('Lütfen bir Amazon ürün sayfasında olun.');
  
 let affiliateUrl = `https://www.amazon.com.tr/dp/${asin}?${AFFILIATE_TAG}`;
 
@@ -248,8 +248,8 @@ formData.append('disable_notification',!soundEnabled);
     return json;
 }
 
-async function sendLink(payload) { 
-console.log(payload.url);
+async function sendLink(payload) {    
+  updateActiveData();
 const urlObj = new URL(payload.url);
 
 // tag ve creative parametrelerini sil
