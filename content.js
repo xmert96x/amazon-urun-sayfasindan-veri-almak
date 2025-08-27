@@ -147,10 +147,23 @@ console.log(conditionText);
   return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer,conditionText };
 }
 
+
+function sendLink() {const pageTitle = document.querySelector("title")?.textContent || '';
+  return { pageTitle,url: window.location.href };}
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if(msg.action==='extractProduct'){
+  if(msg.action==='sendProduct'){
     try{
       const data = extractProduct();
+      sendResponse({ success: true, data });
+    } catch(err){
+      sendResponse({ success: false, error: String(err) });
+    }
+    return true;
+  }
+
+    if(msg.action==='sendLink'){
+    try{
+      const data = sendLink();
       sendResponse({ success: true, data });
     } catch(err){
       sendResponse({ success: false, error: String(err) });

@@ -103,7 +103,7 @@ function extractASIN(url) {
   return match ? match[1] : null;
 }
 
-async function sendToTelegram(payload) { // Check if the payload has the 'source' property and if it's set to 'shortcut'
+async function sendProduct(payload) { // Check if the payload has the 'source' property and if it's set to 'shortcut'
     
 
    
@@ -121,15 +121,18 @@ let affiliateUrl = `https://www.amazon.com.tr/dp/${asin}?${AFFILIATE_TAG}`;
 if (payload.conditionText && payload.conditionText.startsWith('İkinci El:')) {
    affiliateUrl+="&smid=A215JX4S9CANSO&th=1";  
 }
-
+ 
    if (payload.offerData && Object.keys(payload.offerData).length >= 2) {
 const firstTwoEntries = Object.entries(payload.offerData).slice(0, 2);
 
 const firstTwoValues = firstTwoEntries.map(([key, value]) => value);
 
-if ((firstTwoValues[0].includes('Amazon.com.tr') && firstTwoValues[1].includes('Amazon.com.tr'))) {
+if ((firstTwoValues[0].includes('Amazon.com.tr') && firstTwoValues[1].includes('Güvenli işlem'))) {
  affiliateUrl+="&smid=A1UNQM1SR2CHM&th=1";
 }}
+ 
+
+ 
 
     const affiliateUrlSafe = escapeMarkdownV2(affiliateUrl);
 
@@ -189,21 +192,18 @@ const firstTwoEntries = Object.entries(payload.offerData).slice(0, 2);
 
 const firstTwoValues = firstTwoEntries.map(([key, value]) => value);
 
-if (!(firstTwoValues[0].includes('Amazon.com.tr') && firstTwoValues[1].includes('Amazon.com.tr'))) {
+if (!(firstTwoValues[0].includes('Amazon.com.tr') && firstTwoValues[1].includes('Güvenli işlem'))) {
 
     // First, escape any potential markdown in the raw values
     const escapedEntries = firstTwoEntries.map(([key, value]) => [key, escapeMarkdownV2(value)]);
 
 if (escapedEntries.some(([key]) => key)) {
     // Eğer anahtar NULL değilse başına kalın yazı ekle
-    offerText = escapedEntries
-        .map(([key, value]) => key ? `*${key}:* ${value}` : `${value}`)
-        .join('\n').trim();
-} else {
-    // Eğer tüm anahtarlar boşsa sadece değerleri alt alta yaz
-    offerText = escapedEntries
-        .map(([_, value]) => `${value}`)
-        .join('\n').trim();
+   offerText = escapedEntries
+    .filter(([_, value]) => !value.includes('Güvenli işlem')) // "Güvenli işlem" içerenleri atla
+    .map(([key, value]) => key ? `*${key}:* ${value}` : `${value}`)
+    .join('\n')
+    .trim();
 }
  
     captionParts.push(offerText);
@@ -239,67 +239,192 @@ formData.append('disable_notification',!soundEnabled);
     return json;
 }
 
+async function sendLink(payload) { 
+console.log(payload.url);
+const urlObj = new URL(payload.url);
+
+// tag ve creative parametrelerini sil
+urlObj.searchParams.delete("tag");
+urlObj.searchParams.delete("creative");
+
+// ref parametrelerini ekle
+if (AFFILIATE_TAG && typeof AFFILIATE_TAG === "string") {
+    AFFILIATE_TAG.split("&").forEach(param => {
+        const [key, value] = param.split("=");
+        if (key && value) {
+            urlObj.searchParams.set(key, value);
+        }
+    });
+}
+
+console.log(payload.pageTitle);
+console.log(payload.url);
+
+const captionParts = [];
+captionParts.push(escapeMarkdownV2(payload.pageTitle));
+captionParts.push("🔗 "+escapeMarkdownV2(urlObj.toString()));
+captionParts.push(`\\#işbirliği \\#amazon`);
+
+const text = captionParts.filter(Boolean).join("\n\n");
+
+const telegramRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        chat_id: CHANNEL_CHAT_ID,
+        text: text,
+        parse_mode: "MarkdownV2",
+        disable_notification: !soundEnabled
+    })
+});
+
+const json = await telegramRes.json();
+if (!json.ok) throw new Error(JSON.stringify(json));
+return json;
+
+    
+  
+ 
+}
+
 // Mesaj dinleyici
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-    if (msg.action === 'sendTelegram'&& msg.source === 'popup') {
-        sendToTelegram(msg.payload)
+    if (msg.action === 'sendProduct') {  
+        sendProduct(msg.payload)
             .then(() => sendResponse({ ok: true }))
             .catch(err => sendResponse({ ok: false, error: String(err) }));
         return true; 
     }
+
+       if (msg.action === 'sendLink') {
+        
+       sendLink(msg.payload)
+            .then(() => sendResponse({ ok: true }))
+            .catch(err => sendResponse({ ok: false, error: String(err) }));
+        return true; 
+    }
+    
 });
 
-// Kısayol tuş dinleyici
-// Kısayol tuşu dinleyici
-chrome.commands.onCommand.addListener(async (command) => {
-    if (command === 'send_to_telegram') {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-        if (tab && tab.url.includes('amazon.')) {
-            try {
-                // content.js'e mesaj gönder
-                chrome.tabs.sendMessage(tab.id, { action: 'extractProduct' }, async (response) => {
-                    if (response && response.success) {
-        
-                        response.data.source = 'shortcut'; 
-                        await sendToTelegram(response.data);
-                 
-chrome.notifications.create({
-    type: "basic",
-    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
-    title: "Uyarı",
-    message: "✔ Telegram’a başarıyla gönderildi!"
-}); 
+
+
+
+ 
+// Kısayol tuşu dinleyici
+chrome.commands.onCommand.addListener((command) => {
+    if (command === 'send_to_product') {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const tab = tabs[0];
+            if (tab && tab.url.includes('amazon.')) {
+                try {
+                    chrome.tabs.sendMessage(tab.id, { action: 'sendProduct' }, (response) => {
+                        if (response && response.success) {
+                            response.data.source = 'shortcut';
+                            sendProduct(response.data).then(() => {
+                                chrome.notifications.create({
+                                    type: "basic",
+                                    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
+                                    title: "Başarılı",
+                                    message: "✔ Telegram’a başarıyla gönderildi!"
+                                });
+                            }).catch((err) => {
+                                console.error('Kısayol ile gönderme hatası:', err);
+                                chrome.notifications.create({
+                                    type: "basic",
+                                    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
+                                    title: "Hata",
+                                    message: 'Kısayol ile gönderme hatası: ' + err
+                                });
+                            });
+                        } else {
+                            console.error('Ürün verisi alınamadı.');
+                            chrome.notifications.create({
+                                type: "basic",
+                                iconUrl: chrome.runtime.getURL("amazon-notification.png"),
+                                title: "Hata",
+                                message: "Ürün verisi alınamadı."
+                            });
+                        }
+                    });
+                } catch (err) {
+                    console.error('Kısayol ile gönderme hatası:', err);
+                    chrome.notifications.create({
+                        type: "basic",
+                        iconUrl: chrome.runtime.getURL("amazon-notification.png"),
+                        title: "Hata",
+                        message: 'Kısayol ile gönderme hatası: ' + err
+                    });
+                }
+            } else {
+                chrome.notifications.create({
+                    type: "basic",
+                    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
+                    title: "Hata",
+                    message: "Lütfen bir Amazon ürün sayfasında olun."
+                });
+            }
+        });
+    }
+ 
+
+
+
+
+
+ 
+        if (command === 'send_to_link') {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                const tab = tabs[0];
+                if (tab && tab.url.includes('amazon.')) {
+                    chrome.tabs.sendMessage(tab.id, { action: 'sendLink' }, (response) => {
+                        if (response && response.success) {
+                            response.data.source = 'shortcut';
+                            sendLink(response.data).then(() => {
+                                chrome.notifications.create({
+                                    type: "basic",
+                                    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
+                                    title: "Başarılı",
+                                    message: "✔ Telegram’a başarıyla gönderildi!"
+                                });
+                            }).catch((err) => {
+                                console.error('Kısayol ile gönderme hatası:', err);
+                                chrome.notifications.create({
+                                    type: "basic",
+                                    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
+                                    title: "Hata",
+                                    message: 'Kısayol ile gönderme hatası: ' + err
+                                    });
+                                });
+                            } else {
+                                console.error('Kısayol ile gönderme hatası: Ürün verisi alınamadı.');
+                                chrome.notifications.create({
+                                    type: "basic",
+                                    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
+                                    title: "Hata",
+                                    message: "Ürün verisi alınamadı."
+                                });
+                            }
+                        });
                     } else {
-                        console.error('Kısayol ile gönderme hatası: Ürün verisi alınamadı.');
                         chrome.notifications.create({
-    type: "basic",
-    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
-    title: "Uyarı",
-    message: "Kısayol ile gönderme hatası: Ürün verisi alınamadı."
-}); 
+                            type: "basic",
+                            iconUrl: chrome.runtime.getURL("amazon-notification.png"),
+                            title: "Hata",
+                            message: "Lütfen bir Amazon ürün sayfasında olun."
+                        });
                     }
                 });
-            } catch (err) {
-                console.error('Kısayol ile gönderme hatası:', err);
- chrome.notifications.create({
-    type: "basic",
-    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
-    title: "Uyarı",
-    message: 'Kısayol ile gönderme hatası: ' + err
-}); 
-                
             }
-        } 
-          
-        else {
+        });
 
-             chrome.notifications.create({
-    type: "basic",
-    iconUrl: chrome.runtime.getURL("amazon-notification.png"),
-    title: "Uyarı",
-    message: "Hata: Lütfen bir Amazon ürün sayfasında olun."
-}); 
-        }
-    }
-});
+        chrome.notifications.onClicked.addListener(() => {
+            if (typeof CHANNEL_CHAT_ID !== 'undefined') {
+                chrome.tabs.create({ url: "tg://" + CHANNEL_CHAT_ID });
+            } else {
+                console.error("CHANNEL_CHAT_ID tanımlı değil!");
+            }
+        });
+

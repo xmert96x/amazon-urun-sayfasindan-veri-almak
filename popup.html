@@ -1,58 +1,68 @@
-  <!DOCTYPE html>
-  <html lang="tr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amazon → Telegram</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <h3 style="   margin-top: 0;           
-  margin-bottom: 0.5em;">Amazon → Telegram</h3>
-    <!-- Info mesajını dinamik hale getirmek için boş bir div olarak bırakın, içeriği JavaScript ile doldurulacaktır. -->
-    <div id="info" class="info"></div>
-    <div class="card">
-      <div class="toggle-container">
-        <label for="soundToggle">🔊 Sesli Gönder</label>
-        <input type="checkbox" id="soundToggle"   />
+    <!DOCTYPE html>
+    <html lang="tr">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Amazon → Telegram</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+      <h3 style="   margin-top: 0;           
+    margin-bottom: 0.5em;">Amazon → Telegram</h3>
+      <!-- Info mesajını dinamik hale getirmek için boş bir div olarak bırakın, içeriği JavaScript ile doldurulacaktır. -->
+      <div id="info" class="info"></div>
+      <div class="card">
+        <div class="toggle-container">
+          <label for="soundToggle">🔊 Sesli Gönder</label>
+          <input type="checkbox" id="soundToggle"   />
+        </div>
+
+        <div class="toggle-container">
+          <label for="autoPriceToggle">💰 Fiyatı Otomatik Al</label>
+          <input type="checkbox" id="autoPriceToggle"   />
+        </div>
+
+        <div id="priceInputs" style="display:none; flex-direction:column; gap:10px;">
+          <label for="quantityInput">Adet:</label>
+          <input type="number" id="quantityInput" min="1" value="1" />
+      
+          <label for="totalPriceInput">Toplam Fiyat (TL):</label>
+          <input type="number" id="totalPriceInput" min="0" step="0.01" />
+        </div>
+
+        <label for="additionalInfoInput">İlave Bilgi (opsiyonel):</label>
+        <textarea id="additionalInfoInput" rows="3" placeholder="İsteğe bağlı bilgi girin"></textarea>
+
+        <div id="statusMessage"></div>
+
+        <button id="sendBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send">
+            <path d="m22 2-7 20-4-9-9-4 20-7Z"/>
+            <path d="M15 7 9 13"/>
+          </svg>
+          Sayfadaki Ürünü Paylaş
+        </button>        <button id="shareLinkBtn">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link">
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07L13 14"/>
+    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07L11 10"/>
+  </svg>
+  Sayfanın Linkini Gönder
+</button>
+        <button id="settingsBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.39a2 2 0 0 0 .73 2.73l.15.08a2 2 0 0 1 1 1.74v.44a2 2 0 0 1-1 1.74l-.15.08a2 2 0 0 0-.73 2.73l.22.39a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73v.18a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.44a2 2 0 0 1 1-1.74l.15-.08a2 2 0 0 0 .73-2.73l-.22-.39a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          Ayarlar
+        </button>
+  
       </div>
+    <div class="right-text">
+  Öneriler ve sorularınız için <a href="https://t.me/xmert96x" target="_blank"><img src="tg-icon.png"></a>Github:<a href="https://github.com/xmert96x/amazon-urun-sayfasindan-veri-almak"  target="_blank"><img src="github-mark.png"></a></div>
 
-      <div class="toggle-container">
-        <label for="autoPriceToggle">💰 Fiyatı Otomatik Al</label>
-        <input type="checkbox" id="autoPriceToggle"   />
-      </div>
-
-      <div id="priceInputs" style="display:none; flex-direction:column; gap:10px;">
-        <label for="quantityInput">Adet:</label>
-        <input type="number" id="quantityInput" min="1" value="1" />
-    
-        <label for="totalPriceInput">Toplam Fiyat (TL):</label>
-        <input type="number" id="totalPriceInput" min="0" step="0.01" />
-      </div>
-
-      <label for="additionalInfoInput">İlave Bilgi (opsiyonel):</label>
-      <textarea id="additionalInfoInput" rows="3" placeholder="İsteğe bağlı bilgi girin"></textarea>
-
-      <div id="statusMessage"></div>
-
-      <button id="sendBtn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send">
-          <path d="m22 2-7 20-4-9-9-4 20-7Z"/>
-          <path d="M15 7 9 13"/>
-        </svg>
-        Aktif Sayfayı Gönder
-      </button>
-      <button id="settingsBtn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings">
-          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.39a2 2 0 0 0 .73 2.73l.15.08a2 2 0 0 1 1 1.74v.44a2 2 0 0 1-1 1.74l-.15.08a2 2 0 0 0-.73 2.73l.22.39a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73v.18a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.44a2 2 0 0 1 1-1.74l.15-.08a2 2 0 0 0 .73-2.73l-.22-.39a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-        Ayarlar
-      </button>
-    </div>
-    <script src="popup.js"></script>
-  </body>
-  </html>
+      <script src="popup.js"></script>
+    </body>
+    </html>

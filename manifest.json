@@ -19,7 +19,8 @@
     "https://*.amazon.it/*",
     "https://*.amazon.es/*",
     "https://*.amazon.ca/*",
-    "https://*.amazon.in/*"
+    "https://*.amazon.in/*",  
+    "https://api.telegram.org/"
   ],
   "background": {
     "service_worker": "background.js"
@@ -51,13 +52,20 @@
       "run_at": "document_idle"
     }
   ],
+ 
   "commands": {
-    "send_to_telegram": {
+    "send_to_product": {
       "suggested_key": {
         "default": "Ctrl+Shift+S"
-      } 
-        ,"description": "Acik Olan Amazon Urun Sayfani Telegram Gondermeyi  Sağlayan Kısayol"
-
+      },
+      "description": "Açık olan Amazon ürün sayfasını paylaşmayı sağlayan kısayol"
+    },
+    "send_to_link": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L"
+      },
+      "description": "Açık olan Amazon sayfasının linkini refli hale getirip Telegram'da paylaşmayı sağlayan kısayol"
     }
   }
+ 
 }
