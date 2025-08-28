@@ -221,16 +221,17 @@ if (escapedEntries.some(([key]) => key)) {
         captionParts.push(escapeMarkdownV2(payload.internationalShippingContainer));
         
 }}
-
+ 
 if (payload.conditionText.startsWith('İkinci El:')) {
     captionParts.push(`*${escapeMarkdownV2(payload.conditionText.split(':')[0])}:* ${escapeMarkdownV2(payload.conditionText.split(':').slice(1).join(':').trim())}`);
 
 }
 if (payload.source != 'shortcut') {
   captionParts.push(escapeMarkdownV2(additionalInfoInput));
-}
+    }
+   
 console.log("sound:"+soundEnabled);
-captionParts.push(`\\#işbirliği \\#amazon \\#${asin}`);
+captionParts.push(`\\#işbirliği \\#amazon ${escapeMarkdownV2(payload.category)} \\#${asin}`);
     const formData = new FormData();
     formData.append('chat_id', CHANNEL_CHAT_ID);
     formData.append('caption', captionParts.filter(Boolean).join('\n\n'));
@@ -303,7 +304,7 @@ return json;
 }
 
 // Mesaj dinleyici
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {      
     if (msg.action === 'sendProduct') {  
         sendProduct(msg.payload)
             .then(() => sendResponse({ ok: true }))

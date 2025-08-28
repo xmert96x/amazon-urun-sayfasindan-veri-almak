@@ -142,9 +142,9 @@ console.log(conditionText);
  
 
    
-
+const category = "#" + (document.querySelector("title")?.textContent || '').split(":").pop().trim().replace(/\s+/g,"");
  
-  return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer,conditionText };
+  return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer,conditionText,category};
 }
 
 
