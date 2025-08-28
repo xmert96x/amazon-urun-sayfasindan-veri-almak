@@ -174,7 +174,7 @@ let manuelprice = escapeMarkdownV2(
      .join(','))
 );
     const captionParts = [];
-    const stockText = payload.stockInfo ? ` \\(${escapeMarkdownV2(payload.stockInfo)}\\)` : '';
+    const stockText = payload.stockInfo ? ` \\(_${escapeMarkdownV2(payload.stockInfo)}_\\)` : '';
     if (title) captionParts.push(`🛍 *${title}[🔎](${searchLinkSafe})*`);
        if (payload.offerData && Object.keys(payload.offerData).length >= 2) { if (price) {
        
@@ -218,7 +218,7 @@ if (escapedEntries.some(([key]) => key)) {
     captionParts.push(offerText);
 }
     if (payload.internationalShippingContainer) {
-        captionParts.push(escapeMarkdownV2(payload.internationalShippingContainer));
+    captionParts.push(`_${escapeMarkdownV2(payload.internationalShippingContainer)}_`); 
         
 }}
  
