@@ -142,7 +142,7 @@ console.log(conditionText);
  
 
    
-const category = "#" + (document.querySelector("title")?.textContent || '').split(":").pop().trim().replace(/\s+/g,"");
+const category = "#" + (document.querySelector('#wayfinding-breadcrumbs_feature_div ul li a')?.textContent || '').replace(/\s+/g,"");
  
   return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer,conditionText,category};
 }
