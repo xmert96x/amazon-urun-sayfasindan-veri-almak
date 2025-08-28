@@ -159,7 +159,7 @@ if (!affiliateUrl.includes('smid=') && payload.url) {
             const desc = escapeMarkdownV2(p.description || '');
             return `› *${label}* ${desc}`;
         }).join('\n');
-    promosText='🎁 *Kampanyalar*:\n'+promosText;
+    promosText='🎁*Kampanyalar*:\n'+promosText;
     }
 
     const searchLink = `https://www.google.com/search?q=${encodeURIComponent(payload.title || '')}`;
@@ -175,23 +175,23 @@ let manuelprice = escapeMarkdownV2(
 );
     const captionParts = [];
     const stockText = payload.stockInfo ? ` \\(_${escapeMarkdownV2(payload.stockInfo)}_\\)` : '';
-    if (title) captionParts.push(`🛍 *${title}[🔎](${searchLinkSafe})*`);
+    if (title) captionParts.push(`🛍*${title}[🔎](${searchLinkSafe})*`);
        if (payload.offerData && Object.keys(payload.offerData).length >= 2) { if (price) {
        
     
 if (autoPriceToggle === true || payload.source == 'shortcut') {
-    captionParts.push(`💸 *Fiyat*: ${price}${stockText}`);
+    captionParts.push(`💸*Fiyat*: ${price}${stockText}`);
 } else {
     if (quantityInput > 1)
-        captionParts.push(`💸 *Fiyat*: ${quantityInput} adet alımda adeti ${manuelprice} TL ${stockText}`);
+        captionParts.push(`💸*Fiyat*: ${quantityInput} adet alımda adeti ${manuelprice} TL ${stockText}`);
     else
-  captionParts.push(`💸 *Fiyat*: Ödeme adımında ${manuelprice} TL ${stockText}`);   
+  captionParts.push(`💸*Fiyat*: Ödeme adımında ${manuelprice} TL ${stockText}`);   
 }
 
 
 }}else  captionParts.push(`${stockText}`); 
     if (promosText) captionParts.push(promosText);
-    captionParts.push(`🔗 [Amazon’da Gör](${affiliateUrlSafe})`);
+    captionParts.push(`🔗[Amazon’da Gör](${affiliateUrlSafe})`);
     if (payload.selectedSize) {
     captionParts.push(escapeMarkdownV2(payload.selectedSize).replace(/\\\*/g, '*'));
 
