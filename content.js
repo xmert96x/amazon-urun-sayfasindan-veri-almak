@@ -142,9 +142,10 @@ console.log(conditionText);
  
 
    
-const category = (document.querySelector('#wayfinding-breadcrumbs_feature_div ul li a')?.textContent || "")
-  .trim()
-  .replace(/\s+/g, "");
+const category =   (document.querySelector('#wayfinding-breadcrumbs_feature_div ul li a')?.textContent || '')
+    .trim()
+    .replace(/\s+/g, "") ||
+  (document.querySelector("title")?.textContent.split(":").pop().trim().replace(/\s+/g, "") || "");
 
 const categoryTag = category ? "#" + category : "";
 
