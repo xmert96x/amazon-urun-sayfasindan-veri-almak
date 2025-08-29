@@ -142,10 +142,13 @@ console.log(conditionText);
  
 
    
-const categorytemp = document.querySelector('#wayfinding-breadcrumbs_feature_div ul li a');
-const category = categorytemp ? "#" + categorytemp.textContent.trim().replace(/\s+/g, "") : "";
- 
-  return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer,conditionText,category};
+const category = (document.querySelector('#wayfinding-breadcrumbs_feature_div ul li a')?.textContent || "")
+  .trim()
+  .replace(/\s+/g, "");
+
+const categoryTag = category ? "#" + category : "";
+
+  return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer,conditionText,categoryTag};
 }
 
 

@@ -231,7 +231,7 @@ if (payload.source != 'shortcut') {
     }
    
 console.log("sound:"+soundEnabled);
-captionParts.push(`\\#işbirliği \\#amazon ${escapeMarkdownV2(payload.category)} \\#${asin}`);
+captionParts.push(`\\#işbirliği \\#amazon ${escapeMarkdownV2(payload.categoryTag)} \\#${asin}`);
     const formData = new FormData();
     formData.append('chat_id', CHANNEL_CHAT_ID);
     formData.append('caption', captionParts.filter(Boolean).join('\n\n'));
