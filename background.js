@@ -251,7 +251,14 @@ formData.append('disable_notification',!soundEnabled);
 
 async function sendLink(payload) {    
   updateActiveData();
-const urlObj = new URL(payload.url);
+let url = payload.url;
+
+//endsWith() metodu string'lerde kullanılır.
+if (url.endsWith("/") || url.endsWith("\\")) {
+    url = url.slice(0, -1);
+}
+
+const urlObj = new URL(url);
 
 // tag ve creative parametrelerini sil
 urlObj.searchParams.delete("tag");
