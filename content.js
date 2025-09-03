@@ -131,9 +131,9 @@ console.log(conditionText);
 
   promoContainers.forEach(container => {
     const descriptionEl = container.querySelector('div.a-alert-content, span[id^="promoMessage"], span[id^="promoMessageCXCW"]');
-    let descriptionText = descriptionEl ? descriptionEl.innerText.trim() : container.innerText.trim();
+    let descriptionText = (descriptionEl ? descriptionEl.innerText.trim() : container.innerText.trim()).replace(/\s{2,}.*/, '');
     descriptionText = descriptionText.replace(/Uygulandı|Kampanya ürünlerini gör|Koşullar/g,'').replace(/\n/g,' ').trim();
-    if(descriptionText && !promos.some(p=>p.description===descriptionText)){
+  if(descriptionText && !promos.some(p => p.description.includes(descriptionText) || descriptionText.includes(p.description))){
       const labelEl = container.querySelector('label[id^="greenBadge"], span.a-text-bold');
       const labelText = labelEl ? labelEl.innerText.trim() : '';
       promos.push({ label: labelText, description: descriptionText });

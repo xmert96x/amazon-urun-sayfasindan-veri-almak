@@ -164,9 +164,8 @@ if (!affiliateUrl.includes('smid=') && payload.url) {
 
     const searchLink = `https://www.google.com/search?q=${encodeURIComponent(payload.title || '')}`;
     const searchLinkSafe = escapeMarkdownV2(searchLink);
-   
     console.log("Değer:"+autoPriceToggle);
- const price = escapeMarkdownV2(payload.price || '');
+ const price = escapeMarkdownV2(payload.price || '');   
 let manuelprice = escapeMarkdownV2(
     ((totalPriceInput / quantityInput).toFixed(2)
      .split('.')
@@ -237,7 +236,8 @@ captionParts.push(`\\#işbirliği \\#amazon ${escapeMarkdownV2(payload.categoryT
     formData.append('caption', captionParts.filter(Boolean).join('\n\n'));
     formData.append('parse_mode', 'MarkdownV2');
     formData.append('photo', payload.imageUrl);
-formData.append('disable_notification',!soundEnabled);
+formData.append('disable_web_page_preview', true);
+
 
     const telegramRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
         method: 'POST',
@@ -288,17 +288,20 @@ captionParts.push(`\\#işbirliği \\#amazon`);
 
 const text = captionParts.filter(Boolean).join("\n\n");
 
+const formData = new FormData();
+
+// Parametreleri FormData'ya eklemek için append() metodunu kullanın
+formData.append('chat_id', CHANNEL_CHAT_ID);
+formData.append('text', text);
+formData.append('parse_mode', 'MarkdownV2');
+formData.append('disable_notification', !soundEnabled);
+formData.append('disable_web_page_preview', true); // ✅ append ile eklendi
+
+// fetch isteğini FormData objesi ile gönderin
 const telegramRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-        chat_id: CHANNEL_CHAT_ID,
-        text: text,
-        parse_mode: "MarkdownV2",
-        disable_notification: !soundEnabled
-    })
+    // Content-Type başlığını silin, fetch FormData için otomatik olarak ayarlar
+    body: formData 
 });
 
 const json = await telegramRes.json();

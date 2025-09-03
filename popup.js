@@ -160,6 +160,10 @@ async function fetchPrice() {
     });
 
    function showStatus(message, type) {
+
+    if (message.includes("Hata: TypeError: Failed to fetch")) {
+    message = "Bulunduğunuz sayfayı yenileyin.";
+}
     statusMessage.classList.remove('success', 'error', 'warning');
     statusMessage.textContent = message;
 
@@ -170,6 +174,22 @@ async function fetchPrice() {
         incorrectAudio.play();
     }
 
+const observer = new MutationObserver((mutations, obs) => {
+    // Sayfa içeriği değiştiğinde en alta kaydır.
+    window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+    });
+});
+
+// Sayfanın tamamındaki değişiklikleri gözlemle.
+observer.observe(document.body, {
+    childList: true, // Yeni elementlerin eklenmesini izle
+    subtree: true,   // Tüm alt elementleri izle
+});
+
+// Gerekirse gözlemlemeyi durdurmak için:
+// obs.disconnect();
     if (type) statusMessage.classList.add(type);
 }
     sendBtn.addEventListener('click', async () => {
@@ -374,6 +394,24 @@ async function fetchPrice() {
 
          
 });
+let lastSubmitTime = 0;
+const rateLimitTime = 2000; // 2 saniye bekleme süresi
 
+document.addEventListener('keydown', async (event) => {
+    if (event.key === 'Enter' && event.target.tagName === 'INPUT') {
+        const currentTime = Date.now();
+        if (currentTime - lastSubmitTime > rateLimitTime) {
+            // Son gönderimden bu yana yeterli süre geçtiyse, gönderime izin ver.
+            sendBtn.click();
+            lastSubmitTime = currentTime;
+        } else {
+            // Hız sınırlaması nedeniyle gönderimi engelle.
+           showStatus('Lütfen çok hızlı göndermeyin.', 'error');
+ 
+
+
+        }
+    }
+});
 }); 
 
