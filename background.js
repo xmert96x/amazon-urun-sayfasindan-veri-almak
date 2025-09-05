@@ -6,6 +6,7 @@ let totalPriceInput = 0;
 let autoPriceToggle = false;
 let additionalInfoInput = '';
 let soundEnabled = true; // soundEnabled için varsayılan
+ 
 
 // Depolamadan veri çekme işlemi Promise ile
 function getStorageData(keys) {
@@ -21,7 +22,7 @@ async function updateActiveData() {
     const keysToRetrieve = [
         'botTokens',
         'chatIds',
-        'affiliateTags',
+        'affiliateTags',    
         'active-botTokens-key',
         'active-chatIds-key',
         'active-affiliateTags-key',
@@ -38,7 +39,9 @@ async function updateActiveData() {
     BOT_TOKEN = res['active-botTokens-key'] ? res.botTokens[res['active-botTokens-key']] : null;
     CHANNEL_CHAT_ID = res['active-chatIds-key'] ? res.chatIds[res['active-chatIds-key']] : null;
     AFFILIATE_TAG = res['active-affiliateTags-key'] ? res.affiliateTags[res['active-affiliateTags-key']] : null;
+ 
 
+const channelKey = res['active-channelName-key']; 
     // Diğer değerler atanıyor, yoksa varsayılan
     autoPriceToggle = res.autoPriceToggle ?? false;
     quantityInput = res.productQuantity ?? 0;
@@ -164,8 +167,9 @@ if (!affiliateUrl.includes('smid=') && payload.url) {
 
     const searchLink = `https://www.google.com/search?q=${encodeURIComponent(payload.title || '')}`;
     const searchLinkSafe = escapeMarkdownV2(searchLink);
+   
     console.log("Değer:"+autoPriceToggle);
- const price = escapeMarkdownV2(payload.price || '');   
+ const price = escapeMarkdownV2(payload.price || '');
 let manuelprice = escapeMarkdownV2(
     ((totalPriceInput / quantityInput).toFixed(2)
      .split('.')
@@ -228,7 +232,8 @@ if (payload.conditionText.startsWith('İkinci El:')) {
 if (payload.source != 'shortcut') {
   captionParts.push(escapeMarkdownV2(additionalInfoInput));
     }
-   
+
+
 console.log("sound:"+soundEnabled);
 captionParts.push(`\\#işbirliği \\#amazon ${escapeMarkdownV2(payload.categoryTag)} \\#${asin}`);
     const formData = new FormData();
@@ -236,8 +241,7 @@ captionParts.push(`\\#işbirliği \\#amazon ${escapeMarkdownV2(payload.categoryT
     formData.append('caption', captionParts.filter(Boolean).join('\n\n'));
     formData.append('parse_mode', 'MarkdownV2');
     formData.append('photo', payload.imageUrl);
-formData.append('disable_web_page_preview', true);
-
+formData.append('disable_notification',!soundEnabled);
 
     const telegramRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
         method: 'POST',
@@ -288,20 +292,17 @@ captionParts.push(`\\#işbirliği \\#amazon`);
 
 const text = captionParts.filter(Boolean).join("\n\n");
 
-const formData = new FormData();
-
-// Parametreleri FormData'ya eklemek için append() metodunu kullanın
-formData.append('chat_id', CHANNEL_CHAT_ID);
-formData.append('text', text);
-formData.append('parse_mode', 'MarkdownV2');
-formData.append('disable_notification', !soundEnabled);
-formData.append('disable_web_page_preview', true); // ✅ append ile eklendi
-
-// fetch isteğini FormData objesi ile gönderin
 const telegramRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: "POST",
-    // Content-Type başlığını silin, fetch FormData için otomatik olarak ayarlar
-    body: formData 
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        chat_id: CHANNEL_CHAT_ID,
+        text: text,
+        parse_mode: "MarkdownV2",
+        disable_notification: !soundEnabled
+    })
 });
 
 const json = await telegramRes.json();
@@ -414,3 +415,9 @@ chrome.commands.onCommand.addListener((command) => {
             }
         });
 
+chrome.alarms.create("myAlarm", { periodInMinutes: 1 });
+
+chrome.alarms.onAlarm.addListener(() => {
+   // Alarm her 1 dakikada bir tetiklenecek
+   // Buraya istediğin işlemleri yazabilirsin
+});

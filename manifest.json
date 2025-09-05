@@ -9,7 +9,7 @@
       "48": "amazon.png",
       "128": "amazon.png"
   },  
-"permissions": ["storage", "tabs", "scripting", "activeTab", "commands", "notifications"],
+"permissions": ["storage", "tabs", "scripting", "activeTab", "commands", "notifications", "alarms"], 
   "host_permissions": [
     "https://*.amazon.com/*",
     "https://*.amazon.com.tr/*",

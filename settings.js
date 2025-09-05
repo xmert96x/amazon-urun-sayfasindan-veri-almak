@@ -1,8 +1,8 @@
-const DATA_TYPES = ['botTokens', 'chatIds', 'affiliateTags'];
+const DATA_TYPES = ['botTokens', 'chatIds', 'affiliateTags',];
 let aktif_token = null;
 let kanal_id = null;
 let aktif_tag = null;
-
+ 
 // Sekme yönetimi
 function openTab(tabName) {
     chrome.storage.local.set({ activeTabName: tabName });
@@ -17,12 +17,13 @@ async function updateActiveData() {
     chrome.storage.local.get([
         'botTokens', 'chatIds', 'affiliateTags',
         'active-botTokens-key', 'active-chatIds-key', 'active-affiliateTags-key',
-        'activeTabName'
+        'activeTabName', 
     ], (res) => {
         aktif_token = res['active-botTokens-key'] ? res.botTokens[res['active-botTokens-key']] : null;
         kanal_id = res['active-chatIds-key'] ? res.chatIds[res['active-chatIds-key']] : null;
         aktif_tag = res['active-affiliateTags-key'] ? res.affiliateTags[res['active-affiliateTags-key']] : null;
-
+      
+  
         if (!aktif_token) openTab('botTokens');
         else if (!kanal_id) openTab('chatIds');
         else if (!aktif_tag) openTab('affiliateTags');
@@ -111,7 +112,6 @@ async function checkAndRedirectOnce() {
     const botTokensData = await getData('botTokens');
     const chatIdsData = await getData('chatIds');
     const affiliateTagsData = await getData('affiliateTags');
-
     if (Object.keys(botTokensData).length > 0 &&
         Object.keys(chatIdsData).length > 0 &&
         Object.keys(affiliateTagsData).length > 0) {
@@ -151,12 +151,12 @@ async function updateUI(type) {
     await renderTable(type);
     const botTokensData = await getData('botTokens');
     const chatIdsData = await getData('chatIds');
-    const affiliateTagsData = await getData('affiliateTags');
-
+    const affiliateTagsData = await getData('affiliateTags');    
+  
     const activeBotTokenKey = await getActiveKey('botTokens');
     const activeChatIdKey = await getActiveKey('chatIds');
     const activeAffiliateTagKey = await getActiveKey('affiliateTags');
-
+ 
     aktif_token = activeBotTokenKey ? botTokensData[activeBotTokenKey] : null;
     kanal_id = activeChatIdKey ? chatIdsData[activeChatIdKey] : null;
     aktif_tag = activeAffiliateTagKey ? affiliateTagsData[activeAffiliateTagKey] : null;
