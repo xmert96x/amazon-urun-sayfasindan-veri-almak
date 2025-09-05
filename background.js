@@ -130,7 +130,7 @@ const firstTwoEntries = Object.entries(payload.offerData).slice(0, 2);
 
 const firstTwoValues = firstTwoEntries.map(([key, value]) => value);
 
-if ((firstTwoValues[0].includes('Amazon.com.tr') && firstTwoValues[1].includes('Güvenli işlem'))) {
+if ((firstTwoValues[0].includes('Amazon.com.tr') &&( firstTwoValues[1].includes('Güvenli işlem')||firstTwoValues[1].includes('Amazon.com.tr')))) {
  affiliateUrl+="&smid=A1UNQM1SR2CHM&th=1";
 }}
  
@@ -204,7 +204,7 @@ const firstTwoEntries = Object.entries(payload.offerData).slice(0, 2);
 
 const firstTwoValues = firstTwoEntries.map(([key, value]) => value);
 
-if (!(firstTwoValues[0].includes('Amazon.com.tr') && firstTwoValues[1].includes('Güvenli işlem'))) {
+if (!(firstTwoValues[0].includes('Amazon.com.tr') && ( firstTwoValues[1].includes('Güvenli işlem')||firstTwoValues[1].includes('Amazon.com.tr')))) {
 
     // First, escape any potential markdown in the raw values
     const escapedEntries = firstTwoEntries.map(([key, value]) => [key, escapeMarkdownV2(value)]);
