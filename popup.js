@@ -4,7 +4,9 @@ let aktif_tag = null;
 let tempres;
 let globalPrice = null;
 let stockInfo =null;
+ 
 
+ 
 document.addEventListener('DOMContentLoaded', () => {
     const autoPriceToggle = document.getElementById('autoPriceToggle');
     const priceInputs = document.getElementById('priceInputs');
@@ -19,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const correctAudio = new Audio(chrome.runtime.getURL("correct.mp3"));
     const incorrectAudio = new Audio(chrome.runtime.getURL("incorrect.mp3"));
     const  shareLinkBtn = document.getElementById("shareLinkBtn")
+
+    
 
 
     // Hata değişkeni kaldırıldı (gerekli değil)
@@ -173,23 +177,24 @@ async function fetchPrice() {
     if (type == "error") {
         incorrectAudio.play();
     }
+     const observer = new MutationObserver(() => {
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
 
-const observer = new MutationObserver((mutations, obs) => {
-    // Sayfa içeriği değiştiğinde en alta kaydır.
-    window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: 'smooth'
+        // 1 kere kaydırdıktan sonra kısa bir gecikmeyle kapat
+        setTimeout(() => {
+            observer.disconnect();
+        }, 100);
     });
-});
 
-// Sayfanın tamamındaki değişiklikleri gözlemle.
-observer.observe(document.body, {
-    childList: true, // Yeni elementlerin eklenmesini izle
-    subtree: true,   // Tüm alt elementleri izle
-});
+    observer.observe(statusMessage, {
+        childList: true,
+        subtree: true
+    });
+ 
 
-// Gerekirse gözlemlemeyi durdurmak için:
-// obs.disconnect();
     if (type) statusMessage.classList.add(type);
 }
     sendBtn.addEventListener('click', async () => {
@@ -303,7 +308,7 @@ observer.observe(document.body, {
             showStatus('Hata: ' + err.message, 'error');
          
         } finally {
-            sendBtn.disabled = false;
+            sendBtn.disabled = false;  
         }
     });
 
@@ -391,7 +396,7 @@ observer.observe(document.body, {
         } finally {
             shareLinkBtn.disabled = false;
         }
-
+ 
          
 });
 let lastSubmitTime = 0;
