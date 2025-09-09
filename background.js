@@ -196,7 +196,13 @@ if (autoPriceToggle === true || payload.source == 'shortcut') {
     if (promosText) captionParts.push(promosText);
     captionParts.push(`🔗[Amazon’da Gör](${affiliateUrlSafe})`);
     if (payload.selectedSize) {
-    captionParts.push(escapeMarkdownV2(payload.selectedSize).replace(/\\\*/g, '*'));
+captionParts.push(
+  escapeMarkdownV2(payload.selectedSize)
+    .split(" ")
+    .map((v, i, arr) => i === 0 ? v.replace(/\\\*/g, '*') : v)
+    .join(" ")
+    .trim()
+);
 
     }
     if (payload.offerData && Object.keys(payload.offerData).length >= 2) {
