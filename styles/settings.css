@@ -401,6 +401,18 @@ th, td {
       border-radius: 6px;
       cursor: pointer;
     }
-
-
-    
+ .disable-text-select {
+  /* Fare imlecini her durumda varsayılan ok işaretine ayarlar */
+  cursor: default !important;
+  
+  /* Metnin fare ile seçilmesini engeller */
+  user-select: none;
+  
+  /* Fare olaylarının bu elementten geçmesini sağlar */
+  pointer-events: none;
+  
+  /* Tarayıcı ön ekleri (eski tarayıcılar için) */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}

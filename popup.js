@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const settingsBtn = document.getElementById('settingsBtn');
     const soundToggle = document.getElementById("soundToggle");
     const info = document.getElementById("info");
-    const correctAudio = new Audio(chrome.runtime.getURL("correct.mp3"));
-    const incorrectAudio = new Audio(chrome.runtime.getURL("incorrect.mp3"));
+    const correctAudio = new Audio(chrome.runtime.getURL("sound/correct.mp3"));
+    const incorrectAudio = new Audio(chrome.runtime.getURL("sound/incorrect.mp3"));
     const  shareLinkBtn = document.getElementById("shareLinkBtn")
 
     

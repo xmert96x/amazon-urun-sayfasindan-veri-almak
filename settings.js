@@ -1,7 +1,7 @@
 const DATA_TYPES = ['botTokens', 'chatIds', 'affiliateTags',];
-let aktif_token = null;
-let kanal_id = null;
-let aktif_tag = null;
+let activeToken = null;    // aktif_token
+let channelId = null;      // kanal_id
+let activeTag = null;      // aktif_tag
  
 // Sekme yönetimi
 function openTab(tabName) {
@@ -19,14 +19,14 @@ async function updateActiveData() {
         'active-botTokens-key', 'active-chatIds-key', 'active-affiliateTags-key',
         'activeTabName', 
     ], (res) => {
-        aktif_token = res['active-botTokens-key'] ? res.botTokens[res['active-botTokens-key']] : null;
-        kanal_id = res['active-chatIds-key'] ? res.chatIds[res['active-chatIds-key']] : null;
-        aktif_tag = res['active-affiliateTags-key'] ? res.affiliateTags[res['active-affiliateTags-key']] : null;
+        activeToken = res['active-botTokens-key'] ? res.botTokens[res['active-botTokens-key']] : null;
+        channelId = res['active-chatIds-key'] ? res.chatIds[res['active-chatIds-key']] : null;
+        activeTag = res['active-affiliateTags-key'] ? res.affiliateTags[res['active-affiliateTags-key']] : null;
       
   
-        if (!aktif_token) openTab('botTokens');
-        else if (!kanal_id) openTab('chatIds');
-        else if (!aktif_tag) openTab('affiliateTags');
+        if (!activeToken) openTab('botTokens');
+        else if (!channelId) openTab('chatIds');
+        else if (!activeTag) openTab('affiliateTags');
         else if (res.activeTabName) openTab(res.activeTabName);
         else openTab('botTokens');
     });
@@ -64,8 +64,9 @@ function setActiveKey(type, key) {
 // Tabloyu render et
 async function renderTable(type) {
     const tbody = document.getElementById(`botTableBody-${type}`);
+    tbody.addEventListener('mousedown', e => e.preventDefault());
     if (!tbody) return;
-
+ 
     const data = await getData(type);
     const activeKey = await getActiveKey(type);
 
@@ -75,8 +76,8 @@ async function renderTable(type) {
         if (key === activeKey) row.classList.add('active');
 
         row.innerHTML = `
-            <td>${key}</td>
-            <td>${data[key]}</td>
+             <td class="disable-text-select">${key}</td>
+            <td class="disable-text-select">${data[key]}</td>
             <td class="action-buttons">
                 <button class="btn-activate" ${key === activeKey ? 'disabled' : ''}>Aktif Yap</button>
                 <button class="btn-delete" ${key === activeKey ? 'disabled' : ''}>Sil</button>
@@ -157,11 +158,11 @@ async function updateUI(type) {
     const activeChatIdKey = await getActiveKey('chatIds');
     const activeAffiliateTagKey = await getActiveKey('affiliateTags');
  
-    aktif_token = activeBotTokenKey ? botTokensData[activeBotTokenKey] : null;
-    kanal_id = activeChatIdKey ? chatIdsData[activeChatIdKey] : null;
-    aktif_tag = activeAffiliateTagKey ? affiliateTagsData[activeAffiliateTagKey] : null;
+    activeToken  = activeBotTokenKey ? botTokensData[activeBotTokenKey] : null;
+    channelId = activeChatIdKey ? chatIdsData[activeChatIdKey] : null;
+    activeTag  = activeAffiliateTagKey ? affiliateTagsData[activeAffiliateTagKey] : null;
  if (backButton) {
-    if (aktif_token && kanal_id && aktif_tag) {
+    if (activeToken && channelId && activeTag) {
         backButton.style.display = 'block'; // hepsi aktifse göster
     } else {
         backButton.style.display = 'none'; // değilse gizle

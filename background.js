@@ -177,7 +177,20 @@ let manuelprice = escapeMarkdownV2(
      .join(','))
 );
     const captionParts = [];
-    const stockText = payload.stockInfo ? ` \\(_${escapeMarkdownV2(payload.stockInfo)}_\\)` : '';
+let stockText = payload.stockInfo;
+
+if (stockText) {
+  // "Stokta sadece" geçiyorsa rakamları kalın yap
+  if (stockText.includes("Stokta sadece")) {
+    stockText = stockText.replace(/(\d+)/g, '*$1*');
+  }
+
+  // Markdown özel karakterlerini kaçır, sonra yıldızları geri aç
+  stockText = escapeMarkdownV2(stockText).replace(/\\\*/g, '*');
+
+// Son olarak metnin tamamını italik yapmak için alt çizgilerle sarar
+stockText = `\\(_${stockText}_\\)`;
+}
     if (title) captionParts.push(`🛍*${title}[🔎](${searchLinkSafe})*`);
        if (payload.offerData && Object.keys(payload.offerData).length >= 2) { if (price) {
        
@@ -245,10 +258,10 @@ captionParts.push(`\\#işbirliği \\#amazon ${escapeMarkdownV2(payload.categoryT
     const formData = new FormData();
     formData.append('chat_id', CHANNEL_CHAT_ID);
     formData.append('caption', captionParts.filter(Boolean).join('\n\n'));
+    
     formData.append('parse_mode', 'MarkdownV2');
     formData.append('photo', payload.imageUrl);
 formData.append('disable_notification',!soundEnabled);
-
     const telegramRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
         method: 'POST',
         body: formData
@@ -345,7 +358,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 function createNotification(title, message) {
     chrome.notifications.create({
         type: "basic",
-        iconUrl: chrome.runtime.getURL("amazon-notification.png"),
+        iconUrl: chrome.runtime.getURL("img/amazon-notification.png"),
         title: title,
         message: message
     });
