@@ -257,6 +257,9 @@ console.log("sound:"+soundEnabled);
 captionParts.push(`\\#işbirliği \\#amazon ${escapeMarkdownV2(payload.categoryTag)} \\#${asin}`);
     const formData = new FormData();
     formData.append('chat_id', CHANNEL_CHAT_ID);
+  formData.append("link_preview_options", JSON.stringify({
+  is_disabled: true
+}));
     formData.append('caption', captionParts.filter(Boolean).join('\n\n'));
     
     formData.append('parse_mode', 'MarkdownV2');
@@ -319,6 +322,9 @@ const telegramRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMe
     body: JSON.stringify({
         chat_id: CHANNEL_CHAT_ID,
         text: text,
+       link_preview_options: {
+        is_disabled: true
+    },
         parse_mode: "MarkdownV2",
         disable_notification: !soundEnabled
     })
