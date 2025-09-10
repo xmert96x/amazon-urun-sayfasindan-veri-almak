@@ -420,3 +420,12 @@ document.addEventListener('keydown', async (event) => {
 });
 }); 
 
+document.addEventListener("contextmenu", function(e) {
+  // Seçili metni al
+  const selectedText = window.getSelection().toString().trim();
+
+  // Eğer hiçbir şey seçili değilse sağ tıklamayı engelle
+  if (!selectedText) {
+    e.preventDefault();
+  }
+});
