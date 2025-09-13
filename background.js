@@ -127,13 +127,19 @@ if (payload.conditionText && payload.conditionText.startsWith('İkinci El:')) {
  
    if (payload.offerData && Object.keys(payload.offerData).length >= 2) {
 const firstTwoEntries = Object.entries(payload.offerData).slice(0, 2);
+const [[firstKey, firstValue], [secondKey, secondValue]] = firstTwoEntries;
 
 const firstTwoValues = firstTwoEntries.map(([key, value]) => value);
 
 if ((firstTwoValues[0].includes('Amazon.com.tr') &&( firstTwoValues[1].includes('Güvenli işlem')||firstTwoValues[1].includes('Amazon.com.tr')))) {
  affiliateUrl+="&smid=A1UNQM1SR2CHM&th=1";
 }}
- 
+ else if (!secondKey.includes("Satıcı")) {
+  affiliateUrl += "&smid=A1UNQM1SR2CHM&th=1";
+}
+
+
+
 if (!affiliateUrl.includes('smid=') && payload.url) {
     // payload.url içinden smid parametresini çek
     const smidMatch = payload.url.match(/[?&]smid=([^&]+)/);
@@ -226,18 +232,33 @@ const firstTwoValues = firstTwoEntries.map(([key, value]) => value);
 if (!(firstTwoValues[0].includes('Amazon.com.tr') && ( firstTwoValues[1].includes('Güvenli işlem')||firstTwoValues[1].includes('Amazon.com.tr')))) {
 
     // First, escape any potential markdown in the raw values
-    const escapedEntries = firstTwoEntries.map(([key, value]) => [key, escapeMarkdownV2(value)]);
+ const escapedEntries = firstTwoEntries.map(([key, value]) => [key, escapeMarkdownV2(value)]);
 
-if (escapedEntries.some(([key]) => key)) {
-    // Eğer anahtar NULL değilse başına kalın yazı ekle
-   offerText = escapedEntries
-    .filter(([_, value]) => !value.includes('Güvenli işlem')) // "Güvenli işlem" içerenleri atla
-    .map(([key, value]) => key ? `*${key}:* ${value}` : `${value}`)
-    .join('\n')
-    .trim();
+if (escapedEntries.length > 0) {
+    // Filtreleme ve formatlama
+    const filteredEntries = escapedEntries.filter(([key, value], index) => {
+        if (!value) return false; // boş value'ları atla
+        if (value.includes('Güvenli işlem')) return false; // "Güvenli işlem" içerenleri atla
+        if (index === 1 && !key.includes('Satıcı')) return false; // ikinci entry ve key "Satıcı" değilse atla
+        return true;
+    });
+
+    const tempOfferText = filteredEntries
+        .map(([key, value]) => key ? `*${key}:* ${value}` : `${value}`)
+        .join('\n')
+        .trim();
+
+    // Eğer tüm value'lar Amazon.com.tr ise null yap
+ const allValuesAmazon = filteredEntries.every(([_, value]) => 
+        value.trim().toLowerCase().includes('amazon.com.tr')
+    );
+
+const offerText = (allValuesAmazon || filteredEntries.length === 0) ? null : tempOfferText;
+    // offerText varsa captionParts'a ekle
+    if (offerText) {
+        captionParts.push(offerText);
+    }
 }
- 
-    captionParts.push(offerText);
 }
     if (payload.internationalShippingContainer) {
     captionParts.push(`_${escapeMarkdownV2(payload.internationalShippingContainer)}_`); 
