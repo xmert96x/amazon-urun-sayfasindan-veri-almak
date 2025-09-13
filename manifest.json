@@ -2,14 +2,23 @@
   "manifest_version": 3,
   "name": "Amazon → Telegram",
   "version": "1.0",
-    "description": "Açık olan Amazon ürün sayfasını Telegram'a göndermeyi sağlar. İletişim: @xmert96x",
+  "description": "Açık olan Amazon ürün sayfasını Telegram'a göndermeyi sağlar. İletişim: @xmert96x",
   "icons": {
     "16": "amazon.png",
-      "32": "amazon.png",
-      "48": "amazon.png",
-      "128": "amazon.png"
-  },  
-"permissions": ["storage", "tabs", "scripting", "activeTab", "commands", "notifications", "alarms"], 
+    "32": "amazon.png",
+    "48": "amazon.png",
+    "128": "amazon.png"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting",
+    "activeTab",
+    "commands",
+    "notifications",
+    "alarms",
+    "declarativeNetRequestWithHostAccess"
+  ],
   "host_permissions": [
     "https://*.amazon.com/*",
     "https://*.amazon.com.tr/*",
@@ -19,21 +28,20 @@
     "https://*.amazon.it/*",
     "https://*.amazon.es/*",
     "https://*.amazon.ca/*",
-    "https://*.amazon.in/*",  
-    "https://api.telegram.org/"
+    "https://*.amazon.in/*",
+    "https://api.telegram.org/*"
   ],
   "background": {
     "service_worker": "background.js"
   },
-  "action": { 
-  
+  "action": {
     "default_popup": "popup.html",
     "default_icon": {
       "16": "amazon.png",
       "32": "amazon.png",
       "48": "amazon.png",
       "128": "amazon.png"
-    } 
+    }
   },
   "content_scripts": [
     {
@@ -52,7 +60,6 @@
       "run_at": "document_idle"
     }
   ],
- 
   "commands": {
     "send_to_product": {
       "suggested_key": {
@@ -66,6 +73,14 @@
       },
       "description": "Açık olan Amazon sayfasının linkini refli hale getirip Telegram'da paylaşmayı sağlayan kısayol"
     }
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
   }
- 
 }
