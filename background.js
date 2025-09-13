@@ -120,36 +120,40 @@ async function sendProduct(payload) { // Check if the payload has the 'source' p
     if (!asin) throw new Error('Lütfen bir Amazon ürün sayfasında olun.');
  
 let affiliateUrl = `https://www.amazon.com.tr/dp/${asin}?${AFFILIATE_TAG}`;
-
 if (payload.conditionText && payload.conditionText.startsWith('İkinci El:')) {
-   affiliateUrl+="&smid=A215JX4S9CANSO&th=1";  
-}
- 
-   if (payload.offerData && Object.keys(payload.offerData).length >= 2) {
-const firstTwoEntries = Object.entries(payload.offerData).slice(0, 2);
-const [[firstKey, firstValue], [secondKey, secondValue]] = firstTwoEntries;
-
-const firstTwoValues = firstTwoEntries.map(([key, value]) => value);
-
-if ((firstTwoValues[0].includes('Amazon.com.tr') &&( firstTwoValues[1].includes('Güvenli işlem')||firstTwoValues[1].includes('Amazon.com.tr')))) {
- affiliateUrl+="&smid=A1UNQM1SR2CHM&th=1";
-}}
- else if (!secondKey.includes("Satıcı")) {
-  affiliateUrl += "&smid=A1UNQM1SR2CHM&th=1";
+    affiliateUrl += "&smid=A215JX4S9CANSO&th=1";  
 }
 
+if (payload.offerData && Object.keys(payload.offerData).length >= 2) {
+    const firstTwoEntries = Object.entries(payload.offerData).slice(0, 2);
+    const firstTwoValues = firstTwoEntries.map(([key, value]) => value || '');
 
+    // Amazon.com.tr ve Güvenli işlem kontrolü
+    if (
+        firstTwoValues[0].includes('Amazon.com.tr') &&
+        (firstTwoValues[1].includes('Güvenli işlem') || firstTwoValues[1].includes('Amazon.com.tr'))
+    ) {
+        affiliateUrl += "&smid=A1UNQM1SR2CHM&th=1";
+    }
+
+    // secondKey kontrolü
+    const secondEntry = firstTwoEntries[1];
+    const secondKey = secondEntry ? secondEntry[0] : null;
+
+    if (secondKey && !secondKey.includes("Satıcı")) {
+        affiliateUrl += "&smid=A1UNQM1SR2CHM&th=1";
+    }
+}
 
 if (!affiliateUrl.includes('smid=') && payload.url) {
     // payload.url içinden smid parametresini çek
     const smidMatch = payload.url.match(/[?&]smid=([^&]+)/);
     
-    // Eğer smid bulunduysa affiliateUrl'e ekle
     if (smidMatch && smidMatch[1]) {
-        // Eğer URL zaten parametre içeriyorsa & ile ekle, yoksa ? ile başlat
         affiliateUrl += `&smid=${smidMatch[1]}&th=1`;
     }
 }
+
  
 
     const affiliateUrlSafe = escapeMarkdownV2(affiliateUrl);
@@ -236,7 +240,7 @@ if (!(firstTwoValues[0].includes('Amazon.com.tr') && ( firstTwoValues[1].include
 const filteredEntries = firstTwoEntries.filter(([key, value], index) => {
     if (!value) return false; // boş value'ları atla
     if (value.includes('Güvenli işlem')) return false; // "Güvenli işlem" atla
-    if (index === 1 && !key.includes('Satıcı')) return false; // ikinci entry ve key Satıcı değilse atla
+    if (index === 1 && value !== 'Amazon Lojistik' && !key.includes('Satıcı')) return false; // ikinci entry ve key Satıcı değilse atla, ama value Amazon Lojistik ise atlama
     return true;
 });
 
