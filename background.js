@@ -232,33 +232,34 @@ const firstTwoValues = firstTwoEntries.map(([key, value]) => value);
 if (!(firstTwoValues[0].includes('Amazon.com.tr') && ( firstTwoValues[1].includes('Güvenli işlem')||firstTwoValues[1].includes('Amazon.com.tr')))) {
 
     // First, escape any potential markdown in the raw values
- const escapedEntries = firstTwoEntries.map(([key, value]) => [key, escapeMarkdownV2(value)]);
+// 1️⃣ İkinci entry key’i "Satıcı" değilse atla ve diğer filtrelemeler
+const filteredEntries = firstTwoEntries.filter(([key, value], index) => {
+    if (!value) return false; // boş value'ları atla
+    if (value.includes('Güvenli işlem')) return false; // "Güvenli işlem" atla
+    if (index === 1 && !key.includes('Satıcı')) return false; // ikinci entry ve key Satıcı değilse atla
+    return true;
+});
 
-if (escapedEntries.length > 0) {
-    // Filtreleme ve formatlama
-    const filteredEntries = escapedEntries.filter(([key, value], index) => {
-        if (!value) return false; // boş value'ları atla
-        if (value.includes('Güvenli işlem')) return false; // "Güvenli işlem" içerenleri atla
-        if (index === 1 && !key.includes('Satıcı')) return false; // ikinci entry ve key "Satıcı" değilse atla
-        return true;
-    });
+// 2️⃣ Filtrelenmiş sonuç üzerinden tüm value'lar Amazon.com.tr içeriyor mu kontrolü
+const allValuesAmazon = filteredEntries.every(
+    ([_, value]) => value && value.trim().toLowerCase().includes('amazon.com.tr')
+);
 
-    const tempOfferText = filteredEntries
-        .map(([key, value]) => key ? `*${key}:* ${value}` : `${value}`)
+let offerText = null;
+
+if (!allValuesAmazon) {
+    // 3️⃣ Escape ve offerText oluştur
+    offerText = filteredEntries
+        .map(([key, value]) => key ? `*${key}:* ${escapeMarkdownV2(value)}` : escapeMarkdownV2(value))
         .join('\n')
         .trim();
-
-    // Eğer tüm value'lar Amazon.com.tr ise null yap
- const allValuesAmazon = filteredEntries.every(([_, value]) => 
-        value.trim().toLowerCase().includes('amazon.com.tr')
-    );
-
-const offerText = (allValuesAmazon || filteredEntries.length === 0) ? null : tempOfferText;
-    // offerText varsa captionParts'a ekle
-    if (offerText) {
-        captionParts.push(offerText);
-    }
 }
+
+// 4️⃣ offerText varsa captionParts'a ekle
+if (offerText) {
+    captionParts.push(offerText);
+}
+
 }
     if (payload.internationalShippingContainer) {
     captionParts.push(`_${escapeMarkdownV2(payload.internationalShippingContainer)}_`); 
