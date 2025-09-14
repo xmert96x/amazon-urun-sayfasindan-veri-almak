@@ -133,7 +133,7 @@ promoContainers.forEach(container => {
     const descriptionEl = container.querySelector('div.a-alert-content, span[id^="promoMessage"], span[id^="promoMessageCXCW"]');
 const emphasisLink = document.getElementById('emphasisLink');
 const linkText = emphasisLink ? emphasisLink.textContent.trim() : '';
-
+const marker = ".cxcwEmphasisLink";
 let descriptionText = (descriptionEl ? descriptionEl.innerText : container.innerText)
     .trim()
     .replace(/\s{2,}/g, ' ')
@@ -143,7 +143,7 @@ let descriptionText = (descriptionEl ? descriptionEl.innerText : container.inner
 
     const labelEl = container.querySelector('label[id^="greenBadge"], span.a-text-bold');
     const labelText = labelEl ? labelEl.innerText.trim() : '';
-
+descriptionText=descriptionText.substring(0, descriptionText.indexOf(marker));
     if ((labelText + ' ' + descriptionText).trim() &&
         !promos.some(p => ((p.label + ' ' + p.description).trim().includes((labelText + ' ' + descriptionText).trim())))) {
         promos.push({ label: labelText, description: descriptionText });
