@@ -274,6 +274,12 @@ if (payload.conditionText.startsWith('İkinci El:')) {
     captionParts.push(`*${escapeMarkdownV2(payload.conditionText.split(':')[0])}:* ${escapeMarkdownV2(payload.conditionText.split(':').slice(1).join(':').trim())}`);
 
 }
+if(payload.commentMessage.length>0){
+       captionParts.push(
+  `*${escapeMarkdownV2(payload.commentMessage[0].label)}:* ${escapeMarkdownV2(payload.commentMessage[0].description)}`
+);
+}
+
 if (payload.source != 'shortcut') {
   captionParts.push(escapeMarkdownV2(additionalInfoInput));
     }
