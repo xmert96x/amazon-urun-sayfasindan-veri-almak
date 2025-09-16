@@ -1,8 +1,9 @@
-const DATA_TYPES = ['botTokens', 'chatIds', 'affiliateTags',];
-let activeToken = null;    // aktif_token
-let channelId = null;      // kanal_id
-let activeTag = null;      // aktif_tag
- 
+const DATA_TYPES = ['botTokens', 'chatIds', 'affiliateTags'];
+let activeToken = null;
+let channelId = null;
+let activeTag = null;
+let backButton = null;
+
 // Sekme yönetimi
 function openTab(tabName) {
     chrome.storage.local.set({ activeTabName: tabName });
@@ -14,28 +15,25 @@ function openTab(tabName) {
 
 // Aktif verileri güncelle
 async function updateActiveData() {
-    chrome.storage.local.get([
-        'botTokens', 'chatIds', 'affiliateTags',
-        'active-botTokens-key', 'active-chatIds-key', 'active-affiliateTags-key',
-        'activeTabName', 
-    ], (res) => {
-        activeToken = res['active-botTokens-key'] ? res.botTokens[res['active-botTokens-key']] : null;
-        channelId = res['active-chatIds-key'] ? res.chatIds[res['active-chatIds-key']] : null;
-        activeTag = res['active-affiliateTags-key'] ? res.affiliateTags[res['active-affiliateTags-key']] : null;
-      
-  
-        if (!activeToken) openTab('botTokens');
-        else if (!channelId) openTab('chatIds');
-        else if (!activeTag) openTab('affiliateTags');
-        else if (res.activeTabName) openTab(res.activeTabName);
-        else openTab('botTokens');
+    return new Promise(resolve => {
+        chrome.storage.local.get([
+            'botTokens', 'chatIds', 'affiliateTags',
+            'active-botTokens-key', 'active-chatIds-key', 'active-affiliateTags-key',
+            'activeTabName',
+        ], (res) => {
+            activeToken = res['active-botTokens-key'] ? res.botTokens[res['active-botTokens-key']] : null;
+            channelId = res['active-chatIds-key'] ? res.chatIds[res['active-chatIds-key']] : null;
+            activeTag = res['active-affiliateTags-key'] ? res.affiliateTags[res['active-affiliateTags-key']] : null;
+
+            if (!activeToken) openTab('botTokens');
+            else if (!channelId) openTab('chatIds');
+            else if (!activeTag) openTab('affiliateTags');
+            else if (res.activeTabName) openTab(res.activeTabName);
+            else openTab('botTokens');
+            resolve();
+        });
     });
 }
-
-updateActiveData();
-chrome.storage.onChanged.addListener((changes, areaName) => {
-    if (areaName === 'local') updateActiveData();
-});
 
 // Veri çekme / kaydetme
 function getData(type) {
@@ -64,9 +62,9 @@ function setActiveKey(type, key) {
 // Tabloyu render et
 async function renderTable(type) {
     const tbody = document.getElementById(`botTableBody-${type}`);
-    tbody.addEventListener('mousedown', e => e.preventDefault());
     if (!tbody) return;
- 
+    tbody.addEventListener('mousedown', e => e.preventDefault());
+
     const data = await getData(type);
     const activeKey = await getActiveKey(type);
 
@@ -76,7 +74,7 @@ async function renderTable(type) {
         if (key === activeKey) row.classList.add('active');
 
         row.innerHTML = `
-             <td class="disable-text-select">${key}</td>
+            <td class="disable-text-select">${key}</td>
             <td class="disable-text-select">${data[key]}</td>
             <td class="action-buttons">
                 <button class="btn-activate" ${key === activeKey ? 'disabled' : ''}>Aktif Yap</button>
@@ -107,7 +105,6 @@ async function checkAndRedirectOnce() {
     const redirectInfo = await new Promise(resolve =>
         chrome.storage.local.get(['hasRedirected'], result => resolve(result.hasRedirected))
     );
-
     if (redirectInfo) return;
 
     const botTokensData = await getData('botTokens');
@@ -152,28 +149,30 @@ async function updateUI(type) {
     await renderTable(type);
     const botTokensData = await getData('botTokens');
     const chatIdsData = await getData('chatIds');
-    const affiliateTagsData = await getData('affiliateTags');    
-  
+    const affiliateTagsData = await getData('affiliateTags');
+
     const activeBotTokenKey = await getActiveKey('botTokens');
     const activeChatIdKey = await getActiveKey('chatIds');
     const activeAffiliateTagKey = await getActiveKey('affiliateTags');
- 
-    activeToken  = activeBotTokenKey ? botTokensData[activeBotTokenKey] : null;
+
+    activeToken = activeBotTokenKey ? botTokensData[activeBotTokenKey] : null;
     channelId = activeChatIdKey ? chatIdsData[activeChatIdKey] : null;
-    activeTag  = activeAffiliateTagKey ? affiliateTagsData[activeAffiliateTagKey] : null;
- if (backButton) {
-    if (activeToken && channelId && activeTag) {
-        backButton.style.display = 'block'; // hepsi aktifse göster
-    } else {
-        backButton.style.display = 'none'; // değilse gizle
+    activeTag = activeAffiliateTagKey ? affiliateTagsData[activeAffiliateTagKey] : null;
+    
+    // backButton'ın tanımlandığından emin olun
+    if (backButton) {
+        if (activeToken && channelId && activeTag) {
+            backButton.style.display = 'block';
+        } else {
+            backButton.style.display = 'none';
+        }
     }
 }
 
-}
-
-// Başlangıç
+// Başlangıç: Tüm mantık sayfa yüklendiğinde çalışır
 document.addEventListener('DOMContentLoaded', async () => {
-    const backButton = document.getElementById('backButton');
+    // Değişkeni global scope'ta tanımlandığından emin olun
+    backButton = document.getElementById('backButton');
     if (backButton) backButton.addEventListener('click', () => window.location.href = 'popup.html');
 
     document.querySelectorAll('.tab-button').forEach(btn => btn.addEventListener('click', () => openTab(btn.dataset.tab)));
@@ -182,34 +181,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         await renderTable(type);
         setupForm(type);
     }
-
+    
+    await updateActiveData();
     await updateUI();
 
+    const openBtn = document.getElementById('openBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    const lightbox = document.getElementById('lightbox');
 
-      const openBtn = document.getElementById('openBtn');
-  const closeBtn = document.getElementById('closeBtn');
-  const lightbox = document.getElementById('lightbox');
-
-  openBtn.addEventListener('click', () => {
-    lightbox.classList.add('active');
-  });
-
-  closeBtn.addEventListener('click', () => {
-    lightbox.classList.remove('active');
-  });
-
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) {
-      lightbox.classList.remove('active');
+    if (openBtn) {
+        openBtn.addEventListener('click', () => {
+            lightbox.classList.add('active');
+        });
     }
-  });
-});
-document.addEventListener("contextmenu", function(e) {
-  // Seçili metni al
-  const selectedText = window.getSelection().toString().trim();
 
-  // Eğer hiçbir şey seçili değilse sağ tıklamayı engelle
-  if (!selectedText) {
-    e.preventDefault();
-  }
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            lightbox.classList.remove('active');
+        });
+    }
+
+    if (lightbox) {
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                lightbox.classList.remove('active');
+            }
+        });
+    }
+    
+    document.addEventListener("contextmenu", function(e) {
+        const selectedText = window.getSelection().toString().trim();
+        if (!selectedText) {
+            e.preventDefault();
+        }
+    });
+});
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName === 'local') {
+        updateActiveData();
+        updateUI(); // storage değiştiğinde arayüzü de güncelleyin
+    }
 });

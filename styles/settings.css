@@ -20,7 +20,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-  
 }
 
 /* ===================== Container ===================== */
@@ -175,7 +174,7 @@ tbody tr:last-child td {
 }
 
 .action-buttons button {
-    min-width: 0; /* Metne göre küçülsün */
+    min-width: 0;
     white-space: nowrap;
     padding: 8px 12px;
     border: none;
@@ -263,42 +262,45 @@ tbody tr:last-child td {
     font-weight: bold;
     font-size: 1.2em;
 }
-  #backButton {
-  position:absolute;
-  top: 20px;
-  left: 20px;
-  font-size: 16px;
-  user-select: none;
-  background-color: #f0f0f0;
-  padding: 8px 14px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  transition: all 0.3s ease; /* animasyon efekti */
+
+#backButton {
+    position:absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 16px;
+    user-select: none;
+    background-color: #f0f0f0;
+    padding: 8px 14px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
 }
 
 #backButton:hover {
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25), 
-              0 6px 20px rgba(0,0,0,0.15); /* daha derin gölge */
-  transform: translateY(-2px); /* hafif yukarı kalkma efekti */
-} #notification {  text-align: center;
-  background-color: #d4edda; /* A light green color for success */
-  color: #155724; /* A dark green for text */
-  padding: 15px 25px;
-  border-radius: 8px;
-  border: 1px solid #c3e6cb;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  font-family: Arial, sans-serif;
-  font-size: 16px;
-  z-index: 1000;
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  opacity: 0;
-  display: none ;
-  transform: translateY(-20px);
-  }
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 6px 20px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
 
-  .tbody-wrapper {
-    max-height: 180px; /* 3 satırlık veri alanı */
+#notification {
+    text-align: center;
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px 25px;
+    border-radius: 8px;
+    border: 1px solid #c3e6cb;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    z-index: 1000;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity: 0;
+    display: none;
+    transform: translateY(-20px);
+}
+
+.tbody-wrapper {
+    max-height: 180px;
     overflow-y: auto;
     display: block;
 }
@@ -317,102 +319,74 @@ th, td {
 .tbody-wrapper tr:hover {
     background-color: #f5f7fa;
 }
- 
 
-    /* Buton */
-    .btn {border:none;
-  position:absolute;
-  top: 20px;
-  right: 20px;
-  font-size: 16px;
-  user-select: none;
-  background-color: #f0f0f0;
-  padding: 8px 14px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  transition: all 0.3s ease; /* animasyon efekti */
-    }
+.btn {
+    border:none;
+    position:absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 16px;
+    user-select: none;
+    background-color: #f0f0f0;
+    padding: 8px 14px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
 
+.btn:hover {
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 6px 20px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
 
+.lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
 
-    .btn:hover {
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25), 
-              0 6px 20px rgba(0,0,0,0.15); /* daha derin gölge */
-  transform: translateY(-2px); /* hafif yukarı kalkma efekti */
-} #notification {  text-align: center;
-  background-color: #d4edda; /* A light green color for success */
-  color: #155724; /* A dark green for text */
-  padding: 15px 25px;
-  border-radius: 8px;
-  border: 1px solid #c3e6cb;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  font-family: Arial, sans-serif;
-  font-size: 16px;
-  z-index: 1000;
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  opacity: 0;
-  display: none ;
-  transform: translateY(-20px);
-  }
+.lightbox.active {
+    opacity: 1;
+    pointer-events: auto;
+}
 
-    /* Arkaplan (Lightbox Overlay) */
-    .lightbox {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
-    }
+.lightbox-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 400px;
+    max-width: 90%;
+    text-align: center;
+    transform: scale(0.8);
+    transition: transform 0.4s ease;
+}
 
-    /* Açıkken aktif */
-    .lightbox.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
+.lightbox.active .lightbox-content {
+    transform: scale(1);
+}
 
-    /* İçerik kutusu */
-    .lightbox-content {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      width: 400px;
-      max-width: 90%;
-      text-align: center;
-      transform: scale(0.8);
-      transition: transform 0.4s ease;
-    }
+.close {
+    margin-top: 20px;
+    padding: 8px 16px;
+    border: none;
+    background: crimson;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
 
-    .lightbox.active .lightbox-content {
-      transform: scale(1);
-    }
-
-    /* Kapatma butonu */
-    .close {
-      margin-top: 20px;
-      padding: 8px 16px;
-      border: none;
-      background: crimson;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-    }
- .disable-text-select {
-  /* Fare imlecini her durumda varsayılan ok işaretine ayarlar */
-  cursor: default !important;
-  
-  /* Metnin fare ile seçilmesini engeller */
-  user-select: none;
-  
-  /* Fare olaylarının bu elementten geçmesini sağlar */
-  pointer-events: none;
-  
-  /* Tarayıcı ön ekleri (eski tarayıcılar için) */
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+.disable-text-select {
+    cursor: default !important;
+    user-select: none;
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
