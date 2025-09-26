@@ -131,15 +131,22 @@ console.log(conditionText);
 
 promoContainers.forEach(container => {
     const descriptionEl = container.querySelector('div.a-alert-content, span[id^="promoMessage"], span[id^="promoMessageCXCW"]');
-const emphasisLink = document.getElementById('emphasisLink');
-const linkText = emphasisLink ? emphasisLink.textContent.trim() : '';
-const marker = ".cxcwEmphasisLink";
+  const marker = ".cxcwEmphasisLink";
+
 let descriptionText = (descriptionEl ? descriptionEl.innerText : container.innerText)
     .trim()
     .replace(/\s{2,}/g, ' ')
-    .replace(/\n/g, ' ')
-    .replace(new RegExp(linkText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '')
-    .trim();
+    .replace(/\n/g, ' ');
+
+document.querySelectorAll('.cxcwEmphasisLink').forEach(link => {
+    const linkText = link.textContent.trim();
+    if (linkText) {
+        const regex = new RegExp(linkText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+        descriptionText = descriptionText.replace(regex, '');
+    }
+});
+
+descriptionText = descriptionText.trim();
 
     const labelEl = container.querySelector('label[id^="greenBadge"], span.a-text-bold');
     const labelText = labelEl ? labelEl.innerText.trim() : '';

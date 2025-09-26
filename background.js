@@ -218,6 +218,7 @@ if (autoPriceToggle === true || payload.source == 'shortcut') {
 }}else  captionParts.push(`${stockText}`); 
     if (promosText) captionParts.push(promosText);
     captionParts.push(`🔗[Amazon’da Gör](${affiliateUrlSafe})`);
+    
     if (payload.selectedSize) {
 captionParts.push(
   escapeMarkdownV2(payload.selectedSize)
@@ -276,7 +277,7 @@ if (payload.conditionText.startsWith('İkinci El:')) {
 }
 if(payload.commentMessage.length>0){
        captionParts.push(
-  `>*${escapeMarkdownV2(payload.commentMessage[0].label)}:* ${escapeMarkdownV2(payload.commentMessage[0].description)}`
+  `>*${escapeMarkdownV2(payload.commentMessage[0].label)}: *${escapeMarkdownV2(payload.commentMessage[0].description)}`
 );
 }
 
