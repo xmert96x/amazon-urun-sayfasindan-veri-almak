@@ -147,6 +147,9 @@ document.querySelectorAll('.cxcwEmphasisLink').forEach(link => {
 });
 
 descriptionText = descriptionText.trim();
+   if (descriptionText.includes("|")) {
+        descriptionText = descriptionText.split("|")[0].trim();
+    }
 
     const labelEl = container.querySelector('label[id^="greenBadge"], span.a-text-bold');
     const labelText = labelEl ? labelEl.innerText.trim() : '';
