@@ -285,7 +285,7 @@ if(payload.commentMessage.length>0){
 
 
 if (payload.source != 'shortcut') {
-  captionParts.push(escapeMarkdownV2(additionalInfoInput));
+captionParts.push(`>${escapeMarkdownV2(additionalInfoInput)}`);
     }
 
 
@@ -344,7 +344,7 @@ captionParts.push("*"+escapeMarkdownV2(payload.pageTitle)+"*");
 
 captionParts.push("🔗"+escapeMarkdownV2(urlObj.toString()));
 if (payload.source != 'shortcut') {
-  captionParts.push(escapeMarkdownV2(additionalInfoInput));
+ captionParts.push(`>${escapeMarkdownV2(additionalInfoInput)}`);
 }
 captionParts.push(`\\#işbirliği \\#amazon`);
 
