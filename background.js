@@ -46,7 +46,7 @@ const channelKey = res['active-channelName-key'];
     autoPriceToggle = res.autoPriceToggle ?? false;
     quantityInput = res.productQuantity ?? 0;
     totalPriceInput = res.totalPrice ?? 0;
-    additionalInfoInput = res.additionalInfoInput ?? '';
+    additionalInfoInput = res.additionalInfoInput.trim() ?? '';
     soundEnabled = res.soundEnabled ?? true;
 
     // Güncel değerleri logla
@@ -284,7 +284,7 @@ if(payload.commentMessage.length>0){
  
 
 
-if (payload.source != 'shortcut') {
+if (payload.source != 'shortcut') {if(additionalInfoInput.length>0)
 captionParts.push(`>${escapeMarkdownV2(additionalInfoInput)}`);
     }
 
@@ -343,7 +343,7 @@ const captionParts = [];
 captionParts.push("*"+escapeMarkdownV2(payload.pageTitle)+"*");
 
 captionParts.push("🔗"+escapeMarkdownV2(urlObj.toString()));
-if (payload.source != 'shortcut') {
+if (payload.source != 'shortcut') {if(additionalInfoInput.length>0)
  captionParts.push(`>${escapeMarkdownV2(additionalInfoInput)}`);
 }
 captionParts.push(`\\#işbirliği \\#amazon`);
