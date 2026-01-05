@@ -131,29 +131,19 @@ console.log(conditionText);
 
 promoContainers.forEach(container => {
     const descriptionEl = container.querySelector('div.a-alert-content, span[id^="promoMessage"], span[id^="promoMessageCXCW"]');
-  const marker = ".cxcwEmphasisLink";
+const emphasisLink = document.getElementById('emphasisLink');
+const linkText = emphasisLink ? emphasisLink.textContent.trim() : '';
 
 let descriptionText = (descriptionEl ? descriptionEl.innerText : container.innerText)
     .trim()
     .replace(/\s{2,}/g, ' ')
-    .replace(/\n/g, ' ');
-
-document.querySelectorAll('.cxcwEmphasisLink').forEach(link => {
-    const linkText = link.textContent.trim();
-    if (linkText) {
-        const regex = new RegExp(linkText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-        descriptionText = descriptionText.replace(regex, '');
-    }
-});
-
-descriptionText = descriptionText.trim();
-   if (descriptionText.includes("|")) {
-        descriptionText = descriptionText.split("|")[0].trim();
-    }
+    .replace(/\n/g, ' ')
+    .replace(new RegExp(linkText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '')
+    .trim();
 
     const labelEl = container.querySelector('label[id^="greenBadge"], span.a-text-bold');
     const labelText = labelEl ? labelEl.innerText.trim() : '';
-if(descriptionText.includes(marker))descriptionText=descriptionText.substring(0, descriptionText.indexOf(marker));
+
     if ((labelText + ' ' + descriptionText).trim() &&
         !promos.some(p => ((p.label + ' ' + p.description).trim().includes((labelText + ' ' + descriptionText).trim())))) {
         promos.push({ label: labelText, description: descriptionText });
@@ -169,41 +159,7 @@ const category =   (document.querySelector('#wayfinding-breadcrumbs_feature_div 
 
 const categoryTag = category ? "#" + category : "";
 
-
-
-
- 
-const commentMessage = [];
-
- 
-// Alan elementini seç
-const fieldElement = document.querySelector(
-  '#a-popover-usedItemConditionDetailsPopover .a-section.a-spacing-micro:nth-of-type(2) span.a-size-mini'
-);
-
-if (fieldElement) { // element varsa işle
-  const strongTag = fieldElement.querySelector('strong');
-  const fieldName = strongTag ? strongTag.innerText.replace(':', '').trim() : 'unknown';
-
-  // TextNode'lardan sadece metni al
-  const fieldText = Array.from(fieldElement.childNodes)
-    .filter(node => node.nodeType === Node.TEXT_NODE)
-    .map(node => node.textContent.trim())
-    .join(' ');
-
-  commentMessage.push({
-    label: fieldName,
-    description: fieldText
-  });
-}  
-
- 
-
-
- 
-
-
-  return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer,conditionText,categoryTag,commentMessage};
+  return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer,conditionText,categoryTag};
 }
 
 
