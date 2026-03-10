@@ -131,19 +131,29 @@ console.log(conditionText);
 
 promoContainers.forEach(container => {
     const descriptionEl = container.querySelector('div.a-alert-content, span[id^="promoMessage"], span[id^="promoMessageCXCW"]');
-const emphasisLink = document.getElementById('emphasisLink');
-const linkText = emphasisLink ? emphasisLink.textContent.trim() : '';
+  const marker = ".cxcwEmphasisLink";
 
 let descriptionText = (descriptionEl ? descriptionEl.innerText : container.innerText)
     .trim()
     .replace(/\s{2,}/g, ' ')
-    .replace(/\n/g, ' ')
-    .replace(new RegExp(linkText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '')
-    .trim();
+    .replace(/\n/g, ' ');
+
+document.querySelectorAll('.cxcwEmphasisLink').forEach(link => {
+    const linkText = link.textContent.trim();
+    if (linkText) {
+        const regex = new RegExp(linkText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+        descriptionText = descriptionText.replace(regex, '');
+    }
+});
+
+descriptionText = descriptionText.trim();
+   if (descriptionText.includes("|")) {
+        descriptionText = descriptionText.split("|")[0].trim();
+    }
 
     const labelEl = container.querySelector('label[id^="greenBadge"], span.a-text-bold');
     const labelText = labelEl ? labelEl.innerText.trim() : '';
-
+if(descriptionText.includes(marker))descriptionText=descriptionText.substring(0, descriptionText.indexOf(marker));
     if ((labelText + ' ' + descriptionText).trim() &&
         !promos.some(p => ((p.label + ' ' + p.description).trim().includes((labelText + ' ' + descriptionText).trim())))) {
         promos.push({ label: labelText, description: descriptionText });
@@ -159,7 +169,51 @@ const category =   (document.querySelector('#wayfinding-breadcrumbs_feature_div 
 
 const categoryTag = category ? "#" + category : "";
 
-  return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer,conditionText,categoryTag};
+
+
+
+ 
+const commentMessage = [];
+
+// Popover preload'u seç
+const popover = document.querySelector('.a-popover-preload');
+
+if (popover) {
+  // İçindeki tüm span.a-size-mini
+  const spans = popover.querySelectorAll('span.a-size-mini');
+
+  spans.forEach(span => {
+    const strong = span.querySelector('strong');
+    if (!strong) return;
+
+    // Label dinamik
+    const label = strong.innerText.replace(':', '').trim();
+
+    // Sadece label "Yorum" olanı al
+    if (label.toLowerCase() === 'yorum') {
+      const description = Array.from(span.childNodes)
+        .filter(node => node.nodeType === Node.TEXT_NODE)
+        .map(node => node.textContent.trim())
+        .join(' ');
+
+      commentMessage.push({
+        label, // burası artık hep "Yorum"
+        description
+      });
+    }
+  });
+}
+
+console.log(commentMessage);
+
+
+    
+
+
+ 
+
+
+  return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer,conditionText,categoryTag,commentMessage};
 }
 
 
