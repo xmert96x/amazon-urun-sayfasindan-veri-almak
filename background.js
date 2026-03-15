@@ -222,7 +222,7 @@ if (autoPriceToggle === true || payload.source == 'shortcut') {
     if (promosText) captionParts.push(promosText);
     captionParts.push(`🔗[Amazon’da Gör](${affiliateUrlSafe})`);
    
-const moqNumber = Number(payload?.moq?.match(/\d+/)?.[0]);
+const moqNumber = Number(payload?.moq?.match(/\d+/));
 const quantityNumber = Number(quantityInput);
 
 if (
