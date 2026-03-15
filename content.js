@@ -25,7 +25,7 @@ if (priceEl) {
     price = priceEl.innerText.trim();
 }
 
- let moq = document.querySelector('span.a-declarative[data-action="a-popover"] a')?.textContent.trim();
+ let moq = document.getElementById('trigger_popover')?.textContent.trim() || null;;
  console.log(moq)
   
 function getProductSize() {

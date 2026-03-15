@@ -221,9 +221,10 @@ if (autoPriceToggle === true || payload.source == 'shortcut') {
 }}else  captionParts.push(`${stockText}`); 
     if (promosText) captionParts.push(promosText);
     captionParts.push(`🔗[Amazon’da Gör](${affiliateUrlSafe})`);
+    
+if(payload.moq){
     const moq = escapeMarkdownV2(payload.moq);
-
-captionParts.push(`*${moq.slice(0, -1)}*${moq.at(-1)}`);
+captionParts.push(`*${moq.slice(0, -1)}*${moq.at(-1)}`);}
     if (payload.selectedSize) {
 captionParts.push(
   escapeMarkdownV2(payload.selectedSize)
