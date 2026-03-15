@@ -43,10 +43,11 @@ async function updateActiveData() {
 
 const channelKey = res['active-channelName-key']; 
     // Diğer değerler atanıyor, yoksa varsayılan
-    autoPriceToggle = res.autoPriceToggle ?? false;
-    quantityInput = res.productQuantity ?? 0;
-    totalPriceInput = res.totalPrice ?? 0;
-    additionalInfoInput = res.additionalInfoInput.trim() ?? '';
+  autoPriceToggle = res?.autoPriceToggle ?? false;
+quantityInput = res?.productQuantity ?? 0;
+totalPriceInput = res?.totalPrice ?? 0;
+additionalInfoInput = (res?.additionalInfoInput ?? '').trim();
+soundEnabled = res?.soundEnabled ?? true;
     soundEnabled = res.soundEnabled ?? true;
 
     // Güncel değerleri logla
@@ -137,8 +138,9 @@ if (payload.offerData && Object.keys(payload.offerData).length >= 2) {
     }
 
     // secondKey kontrolü
-    const secondEntry = firstTwoEntries[1];
-    const secondKey = secondEntry ? secondEntry[0] : null;
+  
+      const secondKey = (firstTwoEntries && firstTwoEntries[1]) ? firstTwoEntries[1][0] : null;
+
 
     if (secondKey && !secondKey.includes("Satıcı")) {
         affiliateUrl += "&smid=A1UNQM1SR2CHM&th=1";
@@ -185,7 +187,7 @@ let manuelprice = escapeMarkdownV2(
      .split('.')
      .map((v,i) => i === 0 ? v.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : v)
      .join(','))
-);
+);      
     const captionParts = [];
 let stockText = payload.stockInfo;
 
@@ -215,10 +217,13 @@ if (autoPriceToggle === true || payload.source == 'shortcut') {
 }
 
 
+
 }}else  captionParts.push(`${stockText}`); 
     if (promosText) captionParts.push(promosText);
     captionParts.push(`🔗[Amazon’da Gör](${affiliateUrlSafe})`);
-    
+    const moq = escapeMarkdownV2(payload.moq);
+
+captionParts.push(`*${moq.slice(0, -1)}*${moq.at(-1)}`);
     if (payload.selectedSize) {
 captionParts.push(
   escapeMarkdownV2(payload.selectedSize)
@@ -227,6 +232,9 @@ captionParts.push(
     .join(" ")
     .trim()
 );
+
+ 
+
 
     }
     if (payload.offerData && Object.keys(payload.offerData).length >= 2) {

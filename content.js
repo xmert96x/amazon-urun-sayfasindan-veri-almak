@@ -25,8 +25,8 @@ if (priceEl) {
     price = priceEl.innerText.trim();
 }
 
- 
-
+ let moq = document.querySelector('span.a-declarative[data-action="a-popover"] a')?.textContent.trim();
+ console.log(moq)
   
 function getProductSize() {
   // 1. Genişleyen twister düzenini kontrol et
@@ -213,7 +213,7 @@ console.log(commentMessage);
  
 
 
-  return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer,conditionText,categoryTag,commentMessage};
+  return { title, price, url: window.location.href, imageUrl, promos, stockInfo ,selectedSize,offerData,internationalShippingContainer,conditionText,categoryTag,commentMessage,moq};
 }
 
 
